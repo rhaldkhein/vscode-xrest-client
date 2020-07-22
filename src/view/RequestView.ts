@@ -117,6 +117,9 @@ export default class RequestView {
   private getTemplateDefaultData(): any {
 
     // Local path to main script run in the webview
+    const scriptCashPath = vscode.Uri.file(
+      path.join(this._extensionPath, 'media', 'cash.js')
+    )
     const scriptPath = vscode.Uri.file(
       path.join(this._extensionPath, 'media', 'main.js')
     )
@@ -124,12 +127,14 @@ export default class RequestView {
       path.join(this._extensionPath, 'media', 'style.css')
     )
     // And the uri we use to load this script in the webview
+    const scriptCashUri = this._panel.webview.asWebviewUri(scriptCashPath)
     const scriptUri = this._panel.webview.asWebviewUri(scriptPath)
     const styleUri = this._panel.webview.asWebviewUri(stylePath)
 
     return {
       cspNonce: this.getNonce(),
       cspSource: this._panel.webview.cspSource,
+      scriptCashUri,
       scriptUri,
       styleUri
     }

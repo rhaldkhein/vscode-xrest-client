@@ -11,35 +11,69 @@
 </head>
 
 <body>
-  <div class="xr-toparea">
-    <div class="xr-request">
-      <div class="xr-method"><%- config.method.toUpperCase() %></div>
-      <div class="xr-url xr-break"><span class="xr-break"><%- config.url %></span></div>
+
+  <!-- Top Area -->
+  <div class="toparea">
+    <div class="request">
+      <div class="area mr2"><%- config.method.toUpperCase() %></div>
+      <div class="url break"><span class="break"><%- config.url %></span></div>
     </div>
-    <div class="xr-status">
+    <div class="area">
       <% if (parseInt(status) >= 300) { %>
-      <div class="xr-error"><%- status %></div>
+      <div class="error"><%- status %> Success</div>
       <% } else if (parseInt(status) >= 200) { %>
-      <div class="xr-success"><%- status %></div>
+      <div class="success"><%- status %> Success</div>
       <% } %>
     </div>
   </div>
-  <table cellspacing="0">
-    <tbody>
-      <% for (const key in headers) { %>
-      <tr>
-        <td class="xr-header">
-          <span class="xr-header-key"><%- key %></span>
-        </td>
-        <td class="xr-header">
-          <span class="xr-header-value"><%- headers[key] %></span>
-        </td>
-      </tr>
-      <% } %>
-    </tbody>
-  </table>
-  <div><%- JSON.stringify(data) %></div>
+
+  <!-- Main Tab -->
+  <div class="tabs">
+    <div>
+      <div class="mb1">REQUEST</div>
+      <div>
+        <button class="tab-button" data-tab="req-params">Query</button>
+        <button class="tab-button" data-tab="req-body">Body</button>
+        <button class="tab-button" data-tab="req-headers">Headers</button>
+      </div>
+    </div>
+    <div class="tab-group-response">
+      <div class="mb1">RESPONSE</div>
+      <div>
+        <button class="tab-button" data-tab="res-body">Body</button>
+        <button class="tab-button" data-tab="res-headers">Headers</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="dn tab tab-res-body">
+    <div><%- JSON.stringify(data) %></div>
+  </div>
+
+  <div class="dn tab tab-res-headers">
+    <table cellspacing="0">
+      <tbody>
+        <% Object.keys(headers).sort().forEach((key) => { %>
+        <tr>
+          <td class="header">
+            <span class="header-key"><%- key %></span>
+          </td>
+          <td class="header">
+            <span class="header-value"><%- headers[key] %></span>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer Area -->
+
+
+  <!-- Scripts -->
+  <script nonce="<%- cspNonce %>" src="<%- scriptCashUri %>"></script>
   <script nonce="<%- cspNonce %>" src="<%- scriptUri %>"></script>
+
 </body>
 
 </html>

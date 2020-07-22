@@ -1,44 +1,86 @@
-body {
-  padding: 10px 20px;
+body { padding: 10px 20px; }
+button {
+  border: none;
+  padding: 4px 12px 5px;
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:focus {
+  outline: 0;
+}
+button:hover {
+  background-color: var(--vscode-button-secondaryHoverBackground);
 }
 
-.xr-error {
-  color: var(--vscode-terminal-ansiRed);
-}
-.xr-success {
-  color: var(--vscode-terminal-ansiGreen);
-}
-.xr-break {
-  word-break: break-all;
-}
+/* Common Classes */
 
-.xr-toparea {
-  margin-bottom: 20px;
-}
-.xr-status {
+.error { color: var(--vscode-terminal-ansiRed); }
+.success { color: var(--vscode-terminal-ansiGreen); }
+.break { word-break: break-all; }
+.dn { display: none; }
+.db { display: block; }
+.dib {display: inline-block; }
+
+.mr1 { margin-right: 4px }
+.mr2 { margin-right: 10px }
+.mr3 { margin-right: 30px }
+.mb1 { margin-bottom: 4px }
+.mb2 { margin-bottom: 10px }
+.mb3 { margin-bottom: 30px }
+
+.area {
   background-color: var(--vscode-sideBar-background);
   padding: 6px 12px;
   border-radius: 4px;
 }
 
-.xr-request {
+.tabs {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.tab-group-response {
+  text-align: right;
+}
+
+.tab-button.selected {
+  /* border-bottom: 2px solid var(--vscode-button-background); */
+  background-color: var(--vscode-button-background);
+}
+
+/* Unique Classes */
+
+.toparea {
+  margin-bottom: 20px;
+}
+/* .status {
+  background-color: var(--vscode-sideBar-background);
   padding: 6px 12px;
+  border-radius: 4px;
+} */
+
+.request {
   display: flex;
   margin-bottom: 4px;
+  align-items: center;
 }
-.xr-method {
+.method {
   margin-right: 10px;
 }
 
-.xr-header {
+.header {
   border-bottom: 1px dotted var(--vscode-panel-border);
   padding: 4px 10px 4px 10px;
 }
 
-.xr-header-key {
+.header-key {
   white-space: nowrap;
 }
 
-.xr-header-value {
+.header-value {
   word-break: break-all;
 }
