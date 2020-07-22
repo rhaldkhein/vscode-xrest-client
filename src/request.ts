@@ -12,14 +12,14 @@ export default class Request {
     this.regexSupportedFiles = /.+\.http\.js$/i
   }
 
-  public send(): boolean {
+  public async send() {
 
     // Execute request and display to webview panel
     const fileName = vscode.window.activeTextEditor?.document.fileName
     if (fileName && this.regexSupportedFiles.test(fileName)) {
 
       RequestView.createOrShow(this.context.extensionPath)
-      RequestView.currentView?.displayLoading()
+      await RequestView.currentView?.displayLoading()
 
       exec(
         'node ' + __dirname + '/scripts/request ' + fileName,
@@ -37,10 +37,10 @@ export default class Request {
         }
       )
 
-      return true
+      return
     }
-
-    return false
+    // Not handled, show error message
+    vscode.window.showErrorMessage('Please select *.http.js file')
   }
 
 }

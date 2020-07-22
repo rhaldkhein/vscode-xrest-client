@@ -18,14 +18,9 @@ export function activate(context: vscode.ExtensionContext): void {
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
-  const commandSend = vscode.commands.registerCommand('vscode-xrest-client.send', () => {
+  const commandSend = vscode.commands.registerCommand('vscode-xrest-client.send', async () => {
     // The code you place here will be executed every time your command is executed
-
-    // Execute request
-    if (request.send()) return
-
-    // Not handled, show error message
-    vscode.window.showErrorMessage('Please select *.http.js file')
+    await request.send()
   })
 
   // Register commands

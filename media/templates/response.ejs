@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'none'; img-src <%- cspSource %> https:; script-src <%- cspSource %>; style-src <%- cspSource %>;">
+  <title>Response</title>
+  <link rel="stylesheet" href="<%- styleUri %>">
+</head>
+
+<body>
+  <div class="xr-toparea">
+    <div class="xr-request">
+      <div class="xr-method"><%- config.method.toUpperCase() %></div>
+      <div class="xr-url xr-break"><span class="xr-break"><%- config.url %></span></div>
+    </div>
+    <div class="xr-status">
+      <% if (parseInt(status) >= 300) { %>
+      <div class="xr-error"><%- status %></div>
+      <% } else if (parseInt(status) >= 200) { %>
+      <div class="xr-success"><%- status %></div>
+      <% } %>
+    </div>
+  </div>
+  <table cellspacing="0">
+    <tbody>
+      <% for (const key in headers) { %>
+      <tr>
+        <td class="xr-header">
+          <span class="xr-header-key"><%- key %></span>
+        </td>
+        <td class="xr-header">
+          <span class="xr-header-value"><%- headers[key] %></span>
+        </td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+  <div><%- JSON.stringify(data) %></div>
+  <script nonce="<%- cspNonce %>" src="<%- scriptUri %>"></script>
+</body>
+
+</html>

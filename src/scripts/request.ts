@@ -5,9 +5,9 @@ const file = process.argv[2]
 const config = require(file)
 
 function print(response: AxiosResponse<any>): void {
-  const { status, headers, data } = response
+  const { config, status, headers, data } = response
   // tslint:disable-next-line: no-console
-  console.log(JSON.stringify({ status, headers, data }))
+  console.log(JSON.stringify({ config, status, headers, data }))
 }
 
 axios(config)

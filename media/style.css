@@ -1,0 +1,44 @@
+body {
+  padding: 10px 20px;
+}
+
+.xr-error {
+  color: var(--vscode-terminal-ansiRed);
+}
+.xr-success {
+  color: var(--vscode-terminal-ansiGreen);
+}
+.xr-break {
+  word-break: break-all;
+}
+
+.xr-toparea {
+  margin-bottom: 20px;
+}
+.xr-status {
+  background-color: var(--vscode-sideBar-background);
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.xr-request {
+  padding: 6px 12px;
+  display: flex;
+  margin-bottom: 4px;
+}
+.xr-method {
+  margin-right: 10px;
+}
+
+.xr-header {
+  border-bottom: 1px dotted var(--vscode-panel-border);
+  padding: 4px 10px 4px 10px;
+}
+
+.xr-header-key {
+  white-space: nowrap;
+}
+
+.xr-header-value {
+  word-break: break-all;
+}

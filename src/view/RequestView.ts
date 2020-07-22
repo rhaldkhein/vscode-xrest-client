@@ -1,9 +1,6 @@
 import * as path from 'path'
 import * as vscode from 'vscode'
-import { render } from 'ejs'
-import templateLoading from './templates/loading'
-import templateResponse from './templates/response'
-import templateError from './templates/error'
+import { renderFile } from 'ejs'
 
 export default class RequestView {
 
@@ -47,7 +44,7 @@ export default class RequestView {
   private readonly _extensionPath: string
   private _disposables: vscode.Disposable[] = []
 
-  private constructor(
+  constructor(
     panel: vscode.WebviewPanel,
     extensionPath: string) {
 
@@ -61,24 +58,36 @@ export default class RequestView {
 
   }
 
-  public displayLoading():
-    void {
+  public async displayLoading():
+    Promise<void> {
 
-    this._panel.webview.html = templateLoading
+    this._panel.webview.html = await renderFile(
+      path.join(this._extensionPath, 'media', 'templates/loading.ejs'),
+      this.getTemplateDefaultData(),
+      { cache: true }
+    )
   }
 
-  public displayResponse(
+  public async displayResponse(
     response: any):
-    void {
+    Promise<void> {
 
-    this._panel.webview.html = render(templateResponse, response)
+    this._panel.webview.html = await renderFile(
+      path.join(this._extensionPath, 'media', 'templates/response.ejs'),
+      { ...response, ...this.getTemplateDefaultData() },
+      { cache: true }
+    )
   }
 
-  public displayError(
+  public async displayError(
     err: any):
-    void {
+    Promise<void> {
 
-    this._panel.webview.html = templateError
+    this._panel.webview.html = await renderFile(
+      path.join(this._extensionPath, 'media', 'templates/error.ejs'),
+      this.getTemplateDefaultData(),
+      { cache: true }
+    )
   }
 
   public dispose():
@@ -89,6 +98,40 @@ export default class RequestView {
     while (this._disposables.length) {
       const x = this._disposables.pop()
       if (x) x.dispose()
+    }
+  }
+
+  /**
+   * Private
+   */
+
+  private getNonce(): string {
+    let text = ''
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    for (let i = 0; i < 32; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length))
+    }
+    return text
+  }
+
+  private getTemplateDefaultData(): any {
+
+    // Local path to main script run in the webview
+    const scriptPath = vscode.Uri.file(
+      path.join(this._extensionPath, 'media', 'main.js')
+    )
+    const stylePath = vscode.Uri.file(
+      path.join(this._extensionPath, 'media', 'style.css')
+    )
+    // And the uri we use to load this script in the webview
+    const scriptUri = this._panel.webview.asWebviewUri(scriptPath)
+    const styleUri = this._panel.webview.asWebviewUri(stylePath)
+
+    return {
+      cspNonce: this.getNonce(),
+      cspSource: this._panel.webview.cspSource,
+      scriptUri,
+      styleUri
     }
   }
 
