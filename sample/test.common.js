@@ -1,3 +1,5 @@
-const api = 'http://localhost:8080/api';
+const baseUrl = 'http://jsonplaceholder.typicode.com';
 
-module.exports = { api };
+module.exports = {
+  baseUrl
+};

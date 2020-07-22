@@ -1,20 +1,46 @@
-import { request } from 'http'
+import * as vscode from 'vscode'
+import { exec } from 'child_process'
+import RequestView from './view/RequestView'
 
-const file = process.argv[2]
-const config = require(file)
+export default class Request {
 
-const req = request(config.url, (res) => {
-  res.setEncoding('utf8')
-  res.on('data', (chunk) => {
-    console.log(chunk)
-  })
-  res.on('error', (err) => {
-    console.log(err.message)
-  })
-})
+  private context: vscode.ExtensionContext
+  private regexSupportedFiles: RegExp
 
-req.on('error', (err) => {
-  console.log(err.message)
-})
+  constructor(context: vscode.ExtensionContext) {
+    this.context = context
+    this.regexSupportedFiles = /.+\.http\.js$/i
+  }
 
-req.end();
+  public send(): boolean {
+
+    // Execute request and display to webview panel
+    const fileName = vscode.window.activeTextEditor?.document.fileName
+    if (fileName && this.regexSupportedFiles.test(fileName)) {
+
+      RequestView.createOrShow(this.context.extensionPath)
+      RequestView.currentView?.displayLoading()
+
+      exec(
+        'node ' + __dirname + '/scripts/request ' + fileName,
+        (err, stdout, stderr) => {
+          if (err) {
+            RequestView.currentView?.displayError(err)
+          } else {
+            try {
+              RequestView.currentView?.displayResponse(
+                JSON.parse(stdout || stderr))
+            } catch (err) {
+              RequestView.currentView?.displayError(err)
+            }
+          }
+        }
+      )
+
+      return true
+    }
+
+    return false
+  }
+
+}
