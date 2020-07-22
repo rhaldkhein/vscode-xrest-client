@@ -1,5 +1,5 @@
 {
-  "name": "xrest-client",
+  "name": "vscode-xrest-client",
   "displayName": "XREST Client",
   "description": "Flexible REST API testing by using Javascript",
   "version": "0.0.1",
@@ -10,14 +10,14 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:xrest-client.testCommand"
+    "onCommand:vscode-xrest-client.send"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "xrest-client.testCommand",
-        "title": "XREST Test"
+        "command": "vscode-xrest-client.send",
+        "title": "XREST: Send"
       }
     ]
   },
@@ -41,5 +41,8 @@
     "mocha": "^7.1.2",
     "typescript": "^3.8.3",
     "vscode-test": "^1.3.0"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.0"
   }
 }

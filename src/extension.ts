@@ -7,30 +7,29 @@ import { exec } from 'child_process';
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-  console.log(__dirname)
+  const regexSupportedFiles = /.+\.http\.js$/i
 
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "xrest-client" is now active!');
+  console.log('Congratulations, your extension "vscode-xrest-client" is now active!');
 
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand('xrest-client.testCommand', () => {
+  let disposable = vscode.commands.registerCommand('vscode-xrest-client.send', () => {
     // The code you place here will be executed every time your command is executed
-
-
     const fileName = vscode.window.activeTextEditor?.document.fileName
-    if (fileName && fileName.endsWith('.http.js')) {
+    // if (fileName && fileName.test('.http.js')) {
+    if (fileName && regexSupportedFiles.test(fileName)) {
       exec('node ' + __dirname + '/request ' + fileName, (err, stdout, stderr) => {
         console.log('Done', stdout || stderr)
         vscode.window.showInformationMessage(stdout);
       })
-      // vscode.window.showInformationMessage('Done ' + JSON.stringify(config));
       return
     }
+
     // Display a message box to the user
-    vscode.window.showInformationMessage('Testing XREST Client!');
+    vscode.window.showErrorMessage('Please select *.http.js file')
   });
 
   context.subscriptions.push(disposable);
