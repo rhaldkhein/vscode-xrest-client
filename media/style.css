@@ -1,10 +1,15 @@
-body { padding: 10px 20px; }
+body { 
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
 button {
   border: none;
   padding: 4px 12px 5px;
   background-color: var(--vscode-button-secondaryBackground);
   color: var(--vscode-button-secondaryForeground);
-  font-size: 14px;
+  font-size: 12px;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -17,13 +22,15 @@ button:hover {
 
 /* Common Classes */
 
-.error { color: var(--vscode-terminal-ansiRed); }
+.error { color: var(--vscode-terminal-ansiBrightRed); }
+.warning { color: var(--vscode-terminal-ansiYellow); }
 .success { color: var(--vscode-terminal-ansiGreen); }
 .break { word-break: break-all; }
 .dn { display: none; }
 .db { display: block; }
 .dib {display: inline-block; }
 
+.sr { padding: 0; margin: 0; }
 .mr1 { margin-right: 4px }
 .mr2 { margin-right: 10px }
 .mr3 { margin-right: 30px }
@@ -38,38 +45,56 @@ button:hover {
 }
 
 .tabs {
-  margin-bottom: 10px;
   display: flex;
   justify-content: space-between;
 }
-
 .tab-group-response {
   text-align: right;
 }
-
+.tab-button {
+  margin-bottom: 4px;
+}
 .tab-button.selected {
   /* border-bottom: 2px solid var(--vscode-button-background); */
   background-color: var(--vscode-button-background);
 }
+.tab-wrapper {
+  padding: 20px;
+  padding-top: 150px;
+}
+.tab table {
+  width: 100%;
+}
 
 /* Unique Classes */
 
-.toparea {
+.loading {
+  padding: 10px 20px;
+}
+
+.top-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--vscode-editor-background);
+  padding: 10px 20px 14px;
+}
+
+.topbar {
   margin-bottom: 20px;
 }
-/* .status {
-  background-color: var(--vscode-sideBar-background);
-  padding: 6px 12px;
-  border-radius: 4px;
-} */
 
-.request {
+.topbar .request {
   display: flex;
   margin-bottom: 4px;
   align-items: center;
 }
-.method {
-  margin-right: 10px;
+
+.topbar .request .url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .header {

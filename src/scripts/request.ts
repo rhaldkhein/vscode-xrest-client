@@ -10,7 +10,7 @@ function print(response: AxiosResponse<any>): void {
   console.log(JSON.stringify({ config, status, headers, data }))
 }
 
-axios(config)
+axios(typeof config === 'function' ? config() : config)
   .then(print)
   .catch(err => {
     if (err.response) print(err.response)

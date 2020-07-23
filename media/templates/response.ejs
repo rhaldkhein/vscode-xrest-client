@@ -12,63 +12,94 @@
 
 <body>
 
-  <!-- Top Area -->
-  <div class="toparea">
-    <div class="request">
-      <div class="area mr2"><%- config.method.toUpperCase() %></div>
-      <div class="url break"><span class="break"><%- config.url %></span></div>
-    </div>
-    <div class="area">
-      <% if (parseInt(status) >= 300) { %>
-      <div class="error"><%- status %> Success</div>
-      <% } else if (parseInt(status) >= 200) { %>
-      <div class="success"><%- status %> Success</div>
-      <% } %>
-    </div>
-  </div>
-
-  <!-- Main Tab -->
-  <div class="tabs">
-    <div>
-      <div class="mb1">REQUEST</div>
-      <div>
-        <button class="tab-button" data-tab="req-params">Query</button>
-        <button class="tab-button" data-tab="req-body">Body</button>
-        <button class="tab-button" data-tab="req-headers">Headers</button>
+  <div class="top-wrapper">
+    <!-- Top Area -->
+    <div class="topbar">
+      <div class="request">
+        <div class="area mr2"><%- config.method.toUpperCase() %></div>
+        <div class="url"><%- config.url %></div>
+      </div>
+      <div class="area">
+        <% if (parseInt(status) >= 500) { %>
+        <div class="error"><%- status %> <%- codes[status] || 'Server Error'%></div>
+        <% } else if (parseInt(status) >= 400) { %>
+        <div class="error"><%- status %> <%- codes[status] || 'Client Error'%></div>
+        <% } else if (parseInt(status) >= 300) { %>
+        <div class="warning"><%- status %> <%- codes[status] || 'Redirection'%></div>
+        <% } else if (parseInt(status) >= 200) { %>
+        <div class="success"><%- status %> <%- codes[status] || 'Success'%></div>
+        <% } %>
       </div>
     </div>
-    <div class="tab-group-response">
-      <div class="mb1">RESPONSE</div>
+    <!-- Main Tab -->
+    <div class="tabs">
       <div>
-        <button class="tab-button" data-tab="res-body">Body</button>
-        <button class="tab-button" data-tab="res-headers">Headers</button>
+        <div class="mb1">REQUEST</div>
+        <div>
+          <button class="tab-button" data-tab="req-params">Params</button>
+          <button class="tab-button" data-tab="req-body">Body</button>
+          <button class="tab-button" data-tab="req-headers">Headers</button>
+        </div>
+      </div>
+      <div class="tab-group-response">
+        <div class="mb1">RESPONSE</div>
+        <div>
+          <button class="tab-button" data-tab="res-body">Body</button>
+          <button class="tab-button" data-tab="res-headers">Headers</button>
+        </div>
       </div>
     </div>
-  </div>
+  </div> <!-- .top-wrapper -->
 
-  <div class="dn tab tab-res-body">
-    <div><%- JSON.stringify(data) %></div>
-  </div>
+  <div class="tab-wrapper">
 
-  <div class="dn tab tab-res-headers">
-    <table cellspacing="0">
-      <tbody>
-        <% Object.keys(headers).sort().forEach((key) => { %>
-        <tr>
-          <td class="header">
-            <span class="header-key"><%- key %></span>
-          </td>
-          <td class="header">
-            <span class="header-value"><%- headers[key] %></span>
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
+    <div class="dn tab tab-req-params">
+      <div><%- JSON.stringify(config.params) %></div>
+    </div>
 
-  <!-- Footer Area -->
+    <div class="dn tab tab-req-body">
+      <div><%- JSON.stringify(config.data) %></div>
+    </div>
 
+    <div class="dn tab tab-req-headers">
+      <table cellspacing="0">
+        <tbody>
+          <% Object.keys(config.headers).sort().forEach((key) => { %>
+          <tr>
+            <td class="header">
+              <span class="header-key"><%- key %></span>
+            </td>
+            <td class="header">
+              <span class="header-value"><%- config.headers[key] %></span>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="dn tab tab-res-body">
+      <div><%- JSON.stringify(data, null, 4) %></div>
+    </div>
+
+    <div class="dn tab tab-res-headers">
+      <table cellspacing="0">
+        <tbody>
+          <% Object.keys(headers).sort().forEach((key) => { %>
+          <tr>
+            <td class="header">
+              <span class="header-key"><%- key %></span>
+            </td>
+            <td class="header">
+              <span class="header-value"><%- headers[key] %></span>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+  </div> <!-- .tab-wrapper -->
 
   <!-- Scripts -->
   <script nonce="<%- cspNonce %>" src="<%- scriptCashUri %>"></script>

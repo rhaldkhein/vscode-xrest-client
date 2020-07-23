@@ -1,6 +1,6 @@
 (function ($) {
 
-  $tabButtons = $('.tab-button')
+  $tabButtons = $('.tab-button');
 
   $tabButtons.on('click', (e) => {
     const $target = $(e.target);

@@ -1,6 +1,7 @@
 import * as path from 'path'
 import * as vscode from 'vscode'
 import { renderFile } from 'ejs'
+import codes from './codes'
 
 export default class RequestView {
 
@@ -136,7 +137,8 @@ export default class RequestView {
       cspSource: this._panel.webview.cspSource,
       scriptCashUri,
       scriptUri,
-      styleUri
+      styleUri,
+      codes
     }
   }
 

@@ -12,7 +12,7 @@ export default class Request {
     this.regexSupportedFiles = /.+\.http\.js$/i
   }
 
-  public async send() {
+  public async send(): Promise<void> {
 
     // Execute request and display to webview panel
     const fileName = vscode.window.activeTextEditor?.document.fileName
