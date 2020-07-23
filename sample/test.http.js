@@ -1,15 +1,7 @@
-const { baseUrl } = require('./test.common');
 
 // Axios config here
 module.exports = () => {
   return {
-    url: baseUrl + '/todos/3',
-    headers: {
-      'x-custom-foo': 'value-bar'
-    },
-    params: {
-      yay: true
-    },
-    data: 'raw data'
+    url: 'http://fakeapi.jsonparseronline.com/users?_page=1&_limit=2'
   };
 };

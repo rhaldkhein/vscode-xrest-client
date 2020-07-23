@@ -8,6 +8,7 @@
     content="default-src 'none'; img-src <%- cspSource %> https:; script-src <%- cspSource %>; style-src <%- cspSource %>;">
   <title>Response</title>
   <link rel="stylesheet" href="<%- styleUri %>">
+  <link rel="stylesheet" href="<%- styleJsonFormatterUri %>">
 </head>
 
 <body>
@@ -54,11 +55,13 @@
   <div class="tab-wrapper">
 
     <div class="dn tab tab-req-params">
-      <div><%- JSON.stringify(config.params) %></div>
+      <div><%- typeof config.params === 'string' ? 
+        config.params : JSON.stringify(config.params) %></div>
     </div>
 
     <div class="dn tab tab-req-body">
-      <div><%- JSON.stringify(config.data) %></div>
+      <div><%- typeof config.data === 'string' ? 
+        config.data : JSON.stringify(config.data) %></div>
     </div>
 
     <div class="dn tab tab-req-headers">
@@ -79,7 +82,7 @@
     </div>
 
     <div class="dn tab tab-res-body">
-      <div><%- JSON.stringify(data, null, 4) %></div>
+      <div><%- typeof data === 'string' ? data : JSON.stringify(data) %></div>
     </div>
 
     <div class="dn tab tab-res-headers">
@@ -102,6 +105,7 @@
   </div> <!-- .tab-wrapper -->
 
   <!-- Scripts -->
+  <script nonce="<%- cspNonce %>" src="<%- scriptJsonFormatterUri %>"></script>
   <script nonce="<%- cspNonce %>" src="<%- scriptCashUri %>"></script>
   <script nonce="<%- cspNonce %>" src="<%- scriptUri %>"></script>
 

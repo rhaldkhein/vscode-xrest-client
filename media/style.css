@@ -79,6 +79,7 @@ button:hover {
   right: 0;
   background-color: var(--vscode-editor-background);
   padding: 10px 20px 14px;
+  z-index: 9999;
 }
 
 .topbar {

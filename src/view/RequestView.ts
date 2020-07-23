@@ -115,29 +115,33 @@ export default class RequestView {
     return text
   }
 
+  private getUri(file: string): vscode.Uri {
+    return this._panel.webview.asWebviewUri(
+      vscode.Uri.file(
+        path.join(this._extensionPath, 'media', file)
+      )
+    )
+  }
+
   private getTemplateDefaultData(): any {
 
-    // Local path to main script run in the webview
-    const scriptCashPath = vscode.Uri.file(
-      path.join(this._extensionPath, 'media', 'cash.js')
-    )
-    const scriptPath = vscode.Uri.file(
-      path.join(this._extensionPath, 'media', 'main.js')
-    )
-    const stylePath = vscode.Uri.file(
-      path.join(this._extensionPath, 'media', 'style.css')
-    )
-    // And the uri we use to load this script in the webview
-    const scriptCashUri = this._panel.webview.asWebviewUri(scriptCashPath)
-    const scriptUri = this._panel.webview.asWebviewUri(scriptPath)
-    const styleUri = this._panel.webview.asWebviewUri(stylePath)
+    const scriptCashUri = this.getUri('cash.js')
+    const scriptJsonFormatterUri = this.getUri('json-formatter.umd.js')
+    const styleJsonFormatterUri = this.getUri('json-formatter.css')
+
+    const scriptUri = this.getUri('main.js')
+    const styleUri = this.getUri('style.css')
 
     return {
+      scriptCashUri,
+      scriptJsonFormatterUri,
+      scriptUri,
+
+      styleJsonFormatterUri,
+      styleUri,
+
       cspNonce: this.getNonce(),
       cspSource: this._panel.webview.cspSource,
-      scriptCashUri,
-      scriptUri,
-      styleUri,
       codes
     }
   }
