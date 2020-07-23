@@ -7,10 +7,13 @@
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'none'; img-src <%- cspSource %> https:; script-src <%- cspSource %>; style-src <%- cspSource %>;">
   <title>Response</title>
+  <link rel="stylesheet" href="<%- styleUri %>">
 </head>
 
 <body>
-  Error
+  <div class="padding">
+    <div>Something went wrong! Try again later.</div>
+  </div>
 </body>
 
 </html>

@@ -24,15 +24,15 @@ export default class Request {
       exec(
         'node ' + __dirname + '/scripts/request ' + fileName,
         (err, stdout, stderr) => {
-          if (err) {
+          if (err || stderr) {
+            RequestView.currentView?.displayError(err || stderr)
+            return
+          }
+          try {
+            RequestView.currentView?.displayResponse(
+              JSON.parse(stdout || stderr))
+          } catch (err) {
             RequestView.currentView?.displayError(err)
-          } else {
-            try {
-              RequestView.currentView?.displayResponse(
-                JSON.parse(stdout || stderr))
-            } catch (err) {
-              RequestView.currentView?.displayError(err)
-            }
           }
         }
       )

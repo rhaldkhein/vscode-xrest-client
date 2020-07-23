@@ -10,9 +10,6 @@ module.exports = () => {
     params: {
       yay: true
     },
-    data: {
-      foo: 'bar',
-      age: 23
-    }
+    data: 'raw data'
   };
 };

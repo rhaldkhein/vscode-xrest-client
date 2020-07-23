@@ -10,9 +10,21 @@ function print(response: AxiosResponse<any>): void {
   console.log(JSON.stringify({ config, status, headers, data }))
 }
 
+function printError(err: any): void {
+  // tslint:disable-next-line: no-console
+  console.error({
+    errno: err.errno,
+    code: err.code,
+    message: err.message
+  })
+}
+
 axios(typeof config === 'function' ? config() : config)
   .then(print)
   .catch(err => {
-    if (err.response) print(err.response)
-    else print(err)
+    if (err.response) {
+      print(err.response)
+    } else {
+      printError(err)
+    }
   })
