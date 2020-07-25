@@ -19,6 +19,16 @@ function printError(err: any): void {
   })
 }
 
+axios.interceptors.request.use(
+  (config: any) => {
+    config.metadata = { ts: Date.now() }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
 axios(typeof config === 'function' ? config() : config)
   .then(print)
   .catch(err => {

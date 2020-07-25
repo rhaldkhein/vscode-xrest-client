@@ -17,6 +17,9 @@ module.exports = () => {
     },
     params: {
       yeah: 'nice!'
+    },
+    headers: {
+      'x-custom': 'custom data'
     }
   };
 };

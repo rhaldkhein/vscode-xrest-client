@@ -17,9 +17,25 @@
     "commands": [
       {
         "command": "vscode-xrest-client.send",
-        "title": "Xrest: Send"
+        "category": "Xrest",
+        "title": "Send"
       }
-    ]
+    ],
+    "keybindings": [
+      {
+        "command": "vscode-xrest-client.send",
+        "key": "ctrl+cmd+x"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "resourceLangId == javascript",
+          "command": "vscode-xrest-client.send",
+          "group": "z_commands@0"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

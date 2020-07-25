@@ -23,16 +23,19 @@
         <div class="pv1 ph2 bg-sidebar br2 mr2"><%= config.method.toUpperCase() %></div>
         <div class="word-wrap"><%= config.url %></div>
       </div>
-      <div class="pv1 ph2 bg-sidebar br2 mb3">
-        <% if (parseInt(status) >= 500) { %>
-        <div class="error"><%= status %> <%= codes[status] || 'Server Error'%></div>
-        <% } else if (parseInt(status) >= 400) { %>
-        <div class="error"><%= status %> <%= codes[status] || 'Client Error'%></div>
-        <% } else if (parseInt(status) >= 300) { %>
-        <div class="warning"><%= status %> <%= codes[status] || 'Redirection'%></div>
-        <% } else if (parseInt(status) >= 200) { %>
-        <div class="success"><%= status %> <%= codes[status] || 'Success'%></div>
-        <% } %>
+      <div class="pv1 ph2 bg-sidebar br2 mb3 flex justify-between">
+        <div>
+          <% if (parseInt(status) >= 500) { %>
+          <div class="error"><%= status %> <%= codes[status] || 'Server Error'%></div>
+          <% } else if (parseInt(status) >= 400) { %>
+          <div class="error"><%= status %> <%= codes[status] || 'Client Error'%></div>
+          <% } else if (parseInt(status) >= 300) { %>
+          <div class="warning"><%= status %> <%= codes[status] || 'Redirection'%></div>
+          <% } else if (parseInt(status) >= 200) { %>
+          <div class="success"><%= status %> <%= codes[status] || 'Success'%></div>
+          <% } %>
+        </div>
+        <div><%= Date.now() - config.metadata.ts %> ms</div>
       </div>
     </div>
 
