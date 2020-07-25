@@ -1,11 +1,45 @@
 (function ($) {
 
+  let raw = false;
+  const jsonDepth = 2;
+  const jsonOptions = {
+    animateOpen: false,
+    animateClose: false
+  };
+
   /**
-   * Tabs
+   * Functions
    */
 
-  $tabButtons = $('.tab-button');
-  $tabButtons.on('click', (e) => {
+  function displayRaw(data) {
+    $('.tab-body > div').text(data);
+  }
+
+  function displayJson(data) {
+    // Display formatted JSON
+    try {
+      const jsonFormatter = new JSONFormatter(
+        JSON.parse(data),
+        jsonDepth,
+        jsonOptions
+      );
+      $('.tab-body > div').replaceWith(jsonFormatter.render());
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function displayXml(data) {
+    return false;
+  }
+
+  /**
+   * Handlers
+   */
+
+  function tabButtonClickHandler(e) {
+
     const $target = $(e.target);
     const tabName = $target.data('tab');
 
@@ -15,42 +49,52 @@
 
     // Show current tab
     $('.tab').removeClass('db');
-    $('.tab-' + tabName).addClass('db');
-  });
-  $tabButtons.eq(3).trigger('click');
+    switch (tabName) {
+      case 'req-headers':
+      case 'res-headers':
+        $('.tab-' + tabName).addClass('db');
+        break;
+      default:
+        $('.tab-body').addClass('db');
+        const data = $('.data-' + tabName).text();
+        if (!raw) {
+          if (data.startsWith('<')) {
+            // Try to display XML/HTML
+            if (displayXml(data)) {
+              break;
+            }
+          } else {
+            // Try to display formatted JSON
+            if (displayJson(data)) {
+              break;
+            }
+          }
+        }
+        displayRaw(data);
+        break;
+    }
+
+  }
+
+  function rawButtonClickHandler(e) {
+    if (!raw) {
+      $rawButton.addClass('selected');
+      raw = true;
+    } else {
+      $rawButton.removeClass('selected');
+      raw = false;
+    }
+    $('.tab-button.selected').trigger('click');
+  }
 
   /**
-   * JSON Formatting
+   * Tabs
    */
+  $tabButtons = $('.tab-button');
+  $tabButtons.on('click', tabButtonClickHandler);
+  $tabButtons.eq(3).trigger('click');
 
-  const depth = 2;
-  const opt = {
-    animateOpen: false,
-    animateClose: false
-  };
-
-  try {
-    $params = $('.tab-req-params-json > div');
-    const fmtr = new JSONFormatter(JSON.parse($params.text()), depth, opt);
-    $params.replaceWith(fmtr.render());
-  } catch (error) {
-    // Not parsable
-  }
-
-  try {
-    $reqBody = $('.tab-req-body-json > div');
-    const fmtr = new JSONFormatter(JSON.parse($reqBody.text()), depth, opt);
-    $reqBody.replaceWith(fmtr.render());
-  } catch (error) {
-    // Not parsable
-  }
-
-  try {
-    const dataResBody = $('.data-res-body').text();
-    const fmtr = new JSONFormatter(JSON.parse(dataResBody), depth, opt);
-    $('.tab-res-body > div').replaceWith(fmtr.render());
-  } catch (error) {
-    // Not parsable
-  }
+  $rawButton = $('.toggle-raw');
+  $rawButton.on('click', rawButtonClickHandler);
 
 })($);

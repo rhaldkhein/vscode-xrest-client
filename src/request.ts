@@ -9,7 +9,7 @@ export default class Request {
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context
-    this.regexSupportedFiles = /.+\.http\.js$/i
+    this.regexSupportedFiles = /.+\.req\.js$/i
   }
 
   public async send(): Promise<void> {
@@ -40,7 +40,7 @@ export default class Request {
       return
     }
     // Not handled, show error message
-    vscode.window.showErrorMessage('Please select *.http.js file')
+    vscode.window.showErrorMessage('Please select *.req.js file')
   }
 
 }

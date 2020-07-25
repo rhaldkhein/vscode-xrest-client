@@ -4,6 +4,7 @@ body {
   height: 100%;
   width: 100%;
 }
+
 button {
   border: none;
   padding: 4px 12px 5px;
@@ -11,16 +12,31 @@ button {
   color: var(--vscode-button-secondaryForeground);
   font-size: 13px;
   border-radius: 4px;
+  border: 1px solid var(--vscode-button-secondaryBackground);
   cursor: pointer;
+  margin-bottom: 4px;
+  display: inline-block;
 }
 button:focus {
   outline: 0;
 }
 button:hover {
   background-color: var(--vscode-button-secondaryHoverBackground);
+  border-color: var(--vscode-button-secondaryHoverBackground);
 }
 button.selected {
   background-color: var(--vscode-button-background);
+  border-color: var(--vscode-button-background);
+}
+button.toggle {
+  background-color: transparent;
+  border: 1px solid var(--vscode-button-secondaryBackground);
+}
+button.toggle:hover {
+  border-color: var(--vscode-button-secondaryHoverBackground);
+}
+button.toggle.selected {
+  border-color: var(--vscode-button-background);
 }
 
 /* Common Classes */
@@ -29,7 +45,9 @@ button.selected {
 .warning { color: var(--vscode-terminal-ansiYellow); }
 .success { color: var(--vscode-terminal-ansiGreen); }
 .bg-sidebar { background-color: var(--vscode-sideBar-background); }
+.bg-editor { background-color: var(--vscode-editor-background); }
 
 /* Custom Classes */
 
 .cell {  border-color: var(--vscode-panel-border); }
+.main-container { margin-top: 142px; }

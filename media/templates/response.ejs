@@ -5,38 +5,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'none'; img-src <%- cspSource %> https:; script-src <%- cspSource %>; style-src <%- cspSource %>;">
+    content="default-src 'none'; img-src <%= cspSource %> https:; script-src <%= cspSource %>; style-src <%= cspSource %>;">
   <title>Response</title>
   <!-- Styles -->
   <% styles.forEach(uri => { %>
-  <link rel="stylesheet" href="<%- uri %>">
+  <link rel="stylesheet" href="<%= uri %>">
   <% }) %>
 </head>
 
 <body>
 
-  <div class="ph3 pv2">
+  <!-- Top Area -->
+  <div class="ph3 pt3 pb2 fixed bg-editor z-1 top-0 left-0 right-0">
 
-    <!-- Top Area -->
     <div class="topbar">
       <div class="flex items-center mb1">
-        <div class="pv1 ph2 bg-sidebar br2 mr2"><%- config.method.toUpperCase() %></div>
-        <div class="word-wrap"><%- config.url %></div>
+        <div class="pv1 ph2 bg-sidebar br2 mr2"><%= config.method.toUpperCase() %></div>
+        <div class="word-wrap"><%= config.url %></div>
       </div>
       <div class="pv1 ph2 bg-sidebar br2 mb3">
         <% if (parseInt(status) >= 500) { %>
-        <div class="error"><%- status %> <%- codes[status] || 'Server Error'%></div>
+        <div class="error"><%= status %> <%= codes[status] || 'Server Error'%></div>
         <% } else if (parseInt(status) >= 400) { %>
-        <div class="error"><%- status %> <%- codes[status] || 'Client Error'%></div>
+        <div class="error"><%= status %> <%= codes[status] || 'Client Error'%></div>
         <% } else if (parseInt(status) >= 300) { %>
-        <div class="warning"><%- status %> <%- codes[status] || 'Redirection'%></div>
+        <div class="warning"><%= status %> <%= codes[status] || 'Redirection'%></div>
         <% } else if (parseInt(status) >= 200) { %>
-        <div class="success"><%- status %> <%- codes[status] || 'Success'%></div>
+        <div class="success"><%= status %> <%= codes[status] || 'Success'%></div>
         <% } %>
       </div>
     </div>
 
-    <!-- Main Tab -->
     <div class="flex justify-between">
       <div>
         <div class="mb1">REQUEST</div>
@@ -47,34 +46,37 @@
         </div>
       </div>
       <div class="tr">
-        <div class="mb1">RESPONSE (<input type="checkbox" /> Raw)</div>
+        <!-- <div class="mb1">RESPONSE (<input type="checkbox" /> Raw)</div> -->
+        <div class="mb1">RESPONSE</div>
         <div>
+          <button class="toggle toggle-raw">Raw</button>
           <button class="tab-button" data-tab="res-body">Body</button>
           <button class="tab-button" data-tab="res-headers">Headers</button>
         </div>
       </div>
     </div>
 
-  </div> <!-- .top-wrapper -->
+  </div>
 
-  <div class="ph3 pv2">
+  <!-- Main Container / Tab Panels -->
+  <div class="main-container ph3 pv2">
 
-    <div class="dn tab tab-req-params">
+    <!-- Data Body Placeholder -->
+    <div class="dn tab tab-body word-wrap">
       <div></div>
     </div>
-    <div class="dn tab tab-req-body">
-      <div></div>
-    </div>
+
+    <!-- Request Headers -->
     <div class="dn tab tab-req-headers">
       <table cellspacing="0" class="w-100">
         <tbody>
           <% Object.keys(config.headers).sort().forEach((key) => { %>
           <tr>
             <td class="cell bb ph2 pv1">
-              <span class="nowrap"><%- key %></span>
+              <span class="nowrap"><%= key %></span>
             </td>
             <td class="cell bb ph2 pv1">
-              <span class="word-wrap"><%- config.headers[key] %></span>
+              <span class="word-wrap"><%= config.headers[key] %></span>
             </td>
           </tr>
           <% }) %>
@@ -82,19 +84,17 @@
       </table>
     </div>
 
-    <div class="dn tab tab-res-body">
-      <div></div>
-    </div>
+    <!-- Response Headers -->
     <div class="dn tab tab-res-headers">
       <table cellspacing="0" class="w-100">
         <tbody>
           <% Object.keys(headers).sort().forEach((key) => { %>
           <tr>
             <td class="cell ph2 pv1 bb">
-              <span class="nowrap"><%- key %></span>
+              <span class="nowrap"><%= key %></span>
             </td>
             <td class="cell ph2 pv1 bb">
-              <span class="word-wrap"><%- headers[key] %></span>
+              <span class="word-wrap"><%= headers[key] %></span>
             </td>
           </tr>
           <% }) %>
@@ -102,25 +102,25 @@
       </table>
     </div>
 
-  </div> <!-- .tab-wrapper -->
+  </div>
 
   <!-- Data Buckets -->
   <div class="data-req-params dn">
-    <%- typeof config.params === 'string' ? 
+    <%= typeof config.params === 'string' ? 
       config.params : JSON.stringify(config.params) %>
   </div>
   <div class="data-req-body dn">
-    <%- typeof config.data === 'string' ? 
+    <%= typeof config.data === 'string' ? 
       config.data : JSON.stringify(config.data) %>
   </div>
   <div class="data-res-body dn">
-    <%- typeof data === 'string' ? 
+    <%= typeof data === 'string' ? 
       data : JSON.stringify(data) %>
   </div>
 
   <!-- Scripts -->
   <% scripts.forEach(uri => { %>
-  <script nonce="<%- cspNonce %>" src="<%- uri %>"></script>
+  <script nonce="<%= cspNonce %>" src="<%= uri %>"></script>
   <% }) %>
 
 </body>
