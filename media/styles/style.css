@@ -1,0 +1,35 @@
+body { 
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+button {
+  border: none;
+  padding: 4px 12px 5px;
+  background-color: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  font-size: 13px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:focus {
+  outline: 0;
+}
+button:hover {
+  background-color: var(--vscode-button-secondaryHoverBackground);
+}
+button.selected {
+  background-color: var(--vscode-button-background);
+}
+
+/* Common Classes */
+
+.error { color: var(--vscode-terminal-ansiBrightRed); }
+.warning { color: var(--vscode-terminal-ansiYellow); }
+.success { color: var(--vscode-terminal-ansiGreen); }
+.bg-sidebar { background-color: var(--vscode-sideBar-background); }
+
+/* Custom Classes */
+
+.cell {  border-color: var(--vscode-panel-border); }

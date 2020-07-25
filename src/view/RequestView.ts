@@ -45,12 +45,27 @@ export default class RequestView {
   private readonly _extensionPath: string
   private _disposables: vscode.Disposable[] = []
 
+  private _scripts: vscode.Uri[]
+  private _styles: vscode.Uri[]
+
   constructor(
     panel: vscode.WebviewPanel,
     extensionPath: string) {
 
     this._panel = panel
     this._extensionPath = extensionPath
+
+    this._scripts = this.buildUris([
+      'scripts/cash.js',
+      'scripts/json-formatter.umd.js',
+      'scripts/main.js'
+    ])
+
+    this._styles = this.buildUris([
+      'styles/tachyons.min.css',
+      'styles/json-formatter.css',
+      'styles/style.css'
+    ])
 
     // Listen for when the panel is disposed
     // This happens when the user closes the panel or when the panel is
@@ -106,6 +121,10 @@ export default class RequestView {
    * Private
    */
 
+  private buildUris(file: string[]): vscode.Uri[] {
+    return file.map(f => this.getUri(f))
+  }
+
   private getNonce(): string {
     let text = ''
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -124,22 +143,9 @@ export default class RequestView {
   }
 
   private getTemplateDefaultData(): any {
-
-    const scriptCashUri = this.getUri('cash.js')
-    const scriptJsonFormatterUri = this.getUri('json-formatter.umd.js')
-    const styleJsonFormatterUri = this.getUri('json-formatter.css')
-
-    const scriptUri = this.getUri('main.js')
-    const styleUri = this.getUri('style.css')
-
     return {
-      scriptCashUri,
-      scriptJsonFormatterUri,
-      scriptUri,
-
-      styleJsonFormatterUri,
-      styleUri,
-
+      scripts: this._scripts,
+      styles: this._styles,
       cspNonce: this.getNonce(),
       cspSource: this._panel.webview.cspSource,
       codes

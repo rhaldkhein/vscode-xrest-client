@@ -30,7 +30,7 @@
   };
 
   try {
-    $params = $('.tab-req-params > div');
+    $params = $('.tab-req-params-json > div');
     const fmtr = new JSONFormatter(JSON.parse($params.text()), depth, opt);
     $params.replaceWith(fmtr.render());
   } catch (error) {
@@ -38,7 +38,7 @@
   }
 
   try {
-    $reqBody = $('.tab-req-body > div');
+    $reqBody = $('.tab-req-body-json > div');
     const fmtr = new JSONFormatter(JSON.parse($reqBody.text()), depth, opt);
     $reqBody.replaceWith(fmtr.render());
   } catch (error) {
@@ -46,9 +46,9 @@
   }
 
   try {
-    $resBody = $('.tab-res-body > div');
-    const fmtr = new JSONFormatter(JSON.parse($resBody.text()), depth, opt);
-    $resBody.replaceWith(fmtr.render());
+    const dataResBody = $('.data-res-body').text();
+    const fmtr = new JSONFormatter(JSON.parse(dataResBody), depth, opt);
+    $('.tab-res-body > div').replaceWith(fmtr.render());
   } catch (error) {
     // Not parsable
   }

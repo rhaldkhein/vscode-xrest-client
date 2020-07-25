@@ -61,6 +61,9 @@ button:hover {
 .tab-wrapper {
   padding: 20px;
   padding-top: 150px;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 .tab table {
   width: 100%;

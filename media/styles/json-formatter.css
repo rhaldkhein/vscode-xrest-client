@@ -1,19 +1,15 @@
 .json-formatter-row {
-  /* font-family: monospace; */
   line-height: 18px;
 }
-.json-formatter-row,
-.json-formatter-row a,
-.json-formatter-row a:hover {
-  /* color: black; */
+.json-formatter-row, .json-formatter-row a {
   text-decoration: none;
 }
 .json-formatter-row .json-formatter-row {
-  margin-left: 1rem;
+  margin-left: 1.5rem;
 }
 .json-formatter-row .json-formatter-children.json-formatter-empty {
   opacity: 0.5;
-  margin-left: 1rem;
+  margin-left: 1.5rem;
 }
 .json-formatter-row .json-formatter-children.json-formatter-empty:after {
   display: none;
@@ -36,13 +32,13 @@
   color: var(--vscode-terminal-ansiBrightBlue);
 }
 .json-formatter-row .json-formatter-null {
-  color: var(--vscode-terminal-ansiBrightMagenta);
+  color: var(--vscode-terminal-ansiBrightBlack);
 }
 .json-formatter-row .json-formatter-undefined {
-  color: var(--vscode-terminal-ansiBrightMagenta);
+  color: var(--vscode-terminal-ansiBrightBlack);
 }
 .json-formatter-row .json-formatter-function {
-  color: var(--vscode-terminal-ansiWhite);
+  color: var(--vscode-terminal-foreground);
 }
 .json-formatter-row .json-formatter-date {
   color: var(--vscode-terminal-ansiYellow);
@@ -53,10 +49,10 @@
   cursor: pointer;
 }
 .json-formatter-row .json-formatter-bracket {
-  color: var(--vscode-terminal-ansiBrightRed);
+  color: var(--vscode-terminal-foreground);
 }
 .json-formatter-row .json-formatter-key {
-  /* color: #00008B; */
+  color: var(--vscode-foreground);
   padding-right: 0.2rem;
 }
 .json-formatter-row .json-formatter-toggler-link {
@@ -72,12 +68,10 @@
 }
 .json-formatter-row .json-formatter-toggler:after {
   display: inline-block;
-  transition: transform 100ms ease-in;
   content: "►";
 }
 .json-formatter-row > a > .json-formatter-preview-text {
   opacity: 0;
-  transition: opacity 0.15s ease-in;
   font-style: italic;
 }
 .json-formatter-row:hover > a > .json-formatter-preview-text {
@@ -94,4 +88,10 @@
 }
 .json-formatter-row.json-formatter-open.json-formatter-empty:after {
   display: block;
+}
+.json-formatter-constructor-name {
+  /* color: var(--vscode-terminal-ansiBrightMagenta); */
+  color: var(--vscode-terminal-foreground);
+  font-weight: 500;
+  margin-right: 4px;
 }

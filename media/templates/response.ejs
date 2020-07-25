@@ -7,20 +7,23 @@
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'none'; img-src <%- cspSource %> https:; script-src <%- cspSource %>; style-src <%- cspSource %>;">
   <title>Response</title>
-  <link rel="stylesheet" href="<%- styleUri %>">
-  <link rel="stylesheet" href="<%- styleJsonFormatterUri %>">
+  <!-- Styles -->
+  <% styles.forEach(uri => { %>
+  <link rel="stylesheet" href="<%- uri %>">
+  <% }) %>
 </head>
 
 <body>
 
-  <div class="top-wrapper">
+  <div class="ph3 pv2">
+
     <!-- Top Area -->
     <div class="topbar">
-      <div class="request">
-        <div class="area mr2"><%- config.method.toUpperCase() %></div>
-        <div class="url"><%- config.url %></div>
+      <div class="flex items-center mb1">
+        <div class="pv1 ph2 bg-sidebar br2 mr2"><%- config.method.toUpperCase() %></div>
+        <div class="word-wrap"><%- config.url %></div>
       </div>
-      <div class="area">
+      <div class="pv1 ph2 bg-sidebar br2 mb3">
         <% if (parseInt(status) >= 500) { %>
         <div class="error"><%- status %> <%- codes[status] || 'Server Error'%></div>
         <% } else if (parseInt(status) >= 400) { %>
@@ -32,8 +35,9 @@
         <% } %>
       </div>
     </div>
+
     <!-- Main Tab -->
-    <div class="tabs">
+    <div class="flex justify-between">
       <div>
         <div class="mb1">REQUEST</div>
         <div>
@@ -42,38 +46,35 @@
           <button class="tab-button" data-tab="req-headers">Headers</button>
         </div>
       </div>
-      <div class="tab-group-response">
-        <div class="mb1">RESPONSE</div>
+      <div class="tr">
+        <div class="mb1">RESPONSE (<input type="checkbox" /> Raw)</div>
         <div>
           <button class="tab-button" data-tab="res-body">Body</button>
           <button class="tab-button" data-tab="res-headers">Headers</button>
         </div>
       </div>
     </div>
+
   </div> <!-- .top-wrapper -->
 
-  <div class="tab-wrapper">
+  <div class="ph3 pv2">
 
     <div class="dn tab tab-req-params">
-      <div><%- typeof config.params === 'string' ? 
-        config.params : JSON.stringify(config.params) %></div>
+      <div></div>
     </div>
-
     <div class="dn tab tab-req-body">
-      <div><%- typeof config.data === 'string' ? 
-        config.data : JSON.stringify(config.data) %></div>
+      <div></div>
     </div>
-
     <div class="dn tab tab-req-headers">
-      <table cellspacing="0">
+      <table cellspacing="0" class="w-100">
         <tbody>
           <% Object.keys(config.headers).sort().forEach((key) => { %>
           <tr>
-            <td class="header">
-              <span class="header-key"><%- key %></span>
+            <td class="cell bb ph2 pv1">
+              <span class="nowrap"><%- key %></span>
             </td>
-            <td class="header">
-              <span class="header-value"><%- config.headers[key] %></span>
+            <td class="cell bb ph2 pv1">
+              <span class="word-wrap"><%- config.headers[key] %></span>
             </td>
           </tr>
           <% }) %>
@@ -82,19 +83,18 @@
     </div>
 
     <div class="dn tab tab-res-body">
-      <div><%- typeof data === 'string' ? data : JSON.stringify(data) %></div>
+      <div></div>
     </div>
-
     <div class="dn tab tab-res-headers">
-      <table cellspacing="0">
+      <table cellspacing="0" class="w-100">
         <tbody>
           <% Object.keys(headers).sort().forEach((key) => { %>
           <tr>
-            <td class="header">
-              <span class="header-key"><%- key %></span>
+            <td class="cell ph2 pv1 bb">
+              <span class="nowrap"><%- key %></span>
             </td>
-            <td class="header">
-              <span class="header-value"><%- headers[key] %></span>
+            <td class="cell ph2 pv1 bb">
+              <span class="word-wrap"><%- headers[key] %></span>
             </td>
           </tr>
           <% }) %>
@@ -104,10 +104,24 @@
 
   </div> <!-- .tab-wrapper -->
 
+  <!-- Data Buckets -->
+  <div class="data-req-params dn">
+    <%- typeof config.params === 'string' ? 
+      config.params : JSON.stringify(config.params) %>
+  </div>
+  <div class="data-req-body dn">
+    <%- typeof config.data === 'string' ? 
+      config.data : JSON.stringify(config.data) %>
+  </div>
+  <div class="data-res-body dn">
+    <%- typeof data === 'string' ? 
+      data : JSON.stringify(data) %>
+  </div>
+
   <!-- Scripts -->
-  <script nonce="<%- cspNonce %>" src="<%- scriptJsonFormatterUri %>"></script>
-  <script nonce="<%- cspNonce %>" src="<%- scriptCashUri %>"></script>
-  <script nonce="<%- cspNonce %>" src="<%- scriptUri %>"></script>
+  <% scripts.forEach(uri => { %>
+  <script nonce="<%- cspNonce %>" src="<%- uri %>"></script>
+  <% }) %>
 
 </body>
 
