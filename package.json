@@ -3,16 +3,43 @@
   "displayName": "Xrest Client",
   "description": "Flexible REST API testing in VS Code using Javascript",
   "version": "0.0.1",
+  "publisher": "RhaldKhein",
+  "author": {
+    "name": "RhaldKhein",
+    "email": "undyingmind@gmail.com",
+    "url": "https://github.com/rhaldkhein"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rhaldkhein/vscode-xrest-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rhaldkhein/vscode-xrest-client/issues"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/rhaldkhein/vscode-xrest-client",
+  "icon": "media/images/logo-head-128.png",
+  "categories": [
+    "Debuggers",
+    "Testing",
+    "Formatters",
+    "Other"
+  ],
+  "keywords": [
+    "REST",
+    "RESTful",
+    "API",
+    "Client",
+    "Testing",
+    "Debugging"
+  ],
+  "main": "./out/extension.js",
   "engines": {
     "vscode": "^1.47.0"
   },
-  "categories": [
-    "Other"
-  ],
   "activationEvents": [
     "onCommand:vscode-xrest-client.send"
   ],
-  "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
