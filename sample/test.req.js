@@ -1,6 +1,6 @@
 module.exports = () => {
   return {
-    url: 'http://fakeapi.jsonparseronline.com/users',
+    url: 'http://jsonplaceholder.typicode.com/todos/2',
     data: {
       a: undefined,
       b: null,

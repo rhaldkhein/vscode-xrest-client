@@ -1,27 +1,30 @@
 /* eslint-disable curly */
 (function ($) {
 
-  const isImage = /image\/.+/i;
-  const isJson = /.+\/json.*/i;
-  const isXml = /.+\/xml.*/i;
-  const isHtml = /.+\/html.*/i;
-
-  const $body = $('.tab-body > div');
-  const contentType = $('.res-content-type').val();
+  const debug = true;
+  const reqFormatter = $('.req-formatter').val();
+  const resFormatter = $('.res-formatter').val();
   const jsonDepth = 2;
   const jsonOptions = {
     animateOpen: false,
     animateClose: false
   };
 
+  let $log;
   let raw = false;
 
   /**
    * Functions
    */
 
+  function log(str) {
+    if (!debug) return;
+    if (!$log) $log = $('.logger > div');
+    $log.append(`<div>${str}</div>`);
+  }
+
   function writeRaw(data) {
-    $body.text(data);
+    $('.tab-body > div').text(data);
   }
 
   function writeJson(data) {
@@ -32,28 +35,28 @@
         jsonDepth,
         jsonOptions
       );
-      $body.replaceWith(jsonFormatter.render());
+      $('.tab-body > div').replaceWith(jsonFormatter.render());
     } catch (error) {
       // Fallback to raw text display
-      $body.text(data);
+      $('.tab-body > div').text(data);
     }
   }
 
   function writeImage(data) {
     // #TODO to implement
-    $body.text('Display of image is not supported yet.');
+    $('.tab-body > div').text('Display of image is not supported yet.');
   }
 
   function writeXml(data) {
     // #TODO to implement
-    // $body.text('Display of XML is not supported yet.');
-    $body.text(data);
+    // $('.tab-body > div').text('Display of XML is not supported yet.');
+    $('.tab-body > div').text(data);
   }
 
   function writeHtml(data) {
     // #TODO to implement
-    // $body.text('Display of HTML is not supported yet.');
-    $body.text(data);
+    // $('.tab-body > div').text('Display of HTML is not supported yet.');
+    $('.tab-body > div').text(data);
   }
 
   /**
@@ -80,40 +83,36 @@
       case 'req-body':
       case 'res-body':
       default:
-        const data = $('.data-' + tabName).text();
 
-        if (!raw) {
-          // User want to display formatted data
+        if (raw) {
+          $('.tab-raw-' + tabName).addClass('db');
+          break;
+        }
 
-          if (tabName === 'res-body') {
+        const data = $('.tab-raw-' + tabName).text();
 
-            if (isJson.test(contentType)) {
-              writeJson(data);
-            } else if (isImage.test(contentType)) {
-              writeImage(data);
-            } else if (isXml.test(contentType)) {
-              writeXml(data);
-            } else if (isHtml.test(contentType)) {
-              writeHtml(data);
-            } else {
-              writeRaw(data);
-            }
+        if (tabName === 'res-body') {
 
+          if (resFormatter === 'json') {
+            writeJson(data);
+          } else if (resFormatter === 'image') {
+            writeImage(data);
+          } else if (resFormatter === 'xml') {
+            writeXml(data);
+          } else if (resFormatter === 'html') {
+            writeHtml(data);
           } else {
-
-            if (data.startsWith('<')) {
-              // Try to display XML/HTML
-              writeXml(data);
-            } else {
-              // Try to display formatted JSON
-              writeJson(data);
-            }
-
+            writeRaw(data);
           }
 
         } else {
-          // Display raw data
-          writeRaw(data);
+
+          if (reqFormatter === 'json') {
+            writeJson(data);
+          } else {
+            writeRaw(data);
+          }
+
         }
 
         $('.tab-body').addClass('db');
@@ -135,11 +134,11 @@
   /**
    * Tabs
    */
-  $tabButtons = $('.tab-button');
+  const $tabButtons = $('.tab-button');
   $tabButtons.on('click', tabButtonClickHandler);
   $tabButtons.eq(3).trigger('click');
 
-  $rawButton = $('.toggle-raw');
+  const $rawButton = $('.toggle-raw');
   $rawButton.on('click', rawButtonClickHandler);
 
 })($);

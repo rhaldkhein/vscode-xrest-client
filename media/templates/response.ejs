@@ -49,6 +49,24 @@
 <!-- Main Container / Tab Panels -->
 <div class="main-container ph3 pv2">
 
+  <!-- Raw Request Query Params -->
+  <div class="dn tab tab-raw-req-params word-wrap">
+    <%= typeof config.params === 'string' ? 
+        config.params : JSON.stringify(config.params) %>
+  </div>
+
+  <!-- Raw Request Body -->
+  <div class="dn tab tab-raw-req-body word-wrap">
+    <%= typeof config.data === 'string' ? 
+        config.data : JSON.stringify(config.data) %>
+  </div>
+
+  <!-- Raw Response Body -->
+  <div class="dn tab tab-raw-res-body word-wrap">
+    <%= typeof data === 'string' ? 
+        data : JSON.stringify(data) %>
+  </div>
+
   <!-- Request Headers -->
   <div class="dn tab tab-req-headers">
     <table cellspacing="0" class="w-100">
@@ -92,22 +110,14 @@
 
 </div>
 
-<!-- Data Buckets -->
-<div class="data-req-params dn">
-  <%= typeof config.params === 'string' ? 
-      config.params : JSON.stringify(config.params) %>
-</div>
-<div class="data-req-body dn">
-  <%= typeof config.data === 'string' ? 
-      config.data : JSON.stringify(config.data) %>
-</div>
-<div class="data-res-body dn">
-  <%= typeof data === 'string' ? 
-      data : JSON.stringify(data) %>
-</div>
-
 <!-- Header Values -->
-<input type="hidden" class="res-content-type" value="<%= headers['content-type'] %>" />
+<input type="hidden" class="req-formatter" value="<%= reqFormatter %>" />
+<input type="hidden" class="res-formatter" value="<%= resFormatter %>" />
+
+<!-- Logger -->
+<div class="logger ph3 pt3">
+  <div></div>
+</div>
 
 <!-- Scripts -->
 <% scripts.forEach(uri => { %>

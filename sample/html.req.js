@@ -2,6 +2,9 @@ module.exports = () => {
   return {
     url: 'https://www.google.com',
     method: 'post',
-    body: 'hello world'
+    params: {
+      a: 2
+    },
+    data: 'hello world'
   };
 };
