@@ -1,7 +1,7 @@
 {
   "name": "vscode-xrest-client",
   "displayName": "Xrest Client",
-  "description": "Flexible REST API testing in VS Code by using Javascript",
+  "description": "Flexible REST API testing in VS Code using Javascript",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.47.0"
@@ -17,8 +17,13 @@
     "commands": [
       {
         "command": "vscode-xrest-client.send",
-        "category": "Xrest",
-        "title": "Send"
+        "category": "Xrest Client",
+        "title": "Send Request"
+      },
+      {
+        "command": "vscode-xrest-client.showResponse",
+        "category": "Xrest Client",
+        "title": "Show Saved Response"
       }
     ],
     "keybindings": [
@@ -30,9 +35,14 @@
     "menus": {
       "editor/context": [
         {
-          "when": "resourceLangId == javascript",
           "command": "vscode-xrest-client.send",
-          "group": "z_commands@0"
+          "when": "resourceLangId == javascript",
+          "group": "z_commands"
+        },
+        {
+          "command": "vscode-xrest-client.showResponse",
+          "when": "resourceLangId == javascript",
+          "group": "z_commands"
         }
       ]
     }

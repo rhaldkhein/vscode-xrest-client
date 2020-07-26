@@ -55,17 +55,19 @@ export default class RequestView {
     this._panel = panel
     this._extensionPath = extensionPath
 
-    this._scripts = this.buildUris([
+    this._scripts = this.buildWebUris([
       'scripts/cash.js',
       'scripts/json-formatter.umd.js',
       'scripts/main.js'
     ])
 
-    this._styles = this.buildUris([
+    this._styles = this.buildWebUris([
       'styles/tachyons.min.css',
       'styles/json-formatter.css',
       'styles/style.css'
     ])
+
+    this._panel.iconPath = this.getPath('images/logo-head-256.png')
 
     // Listen for when the panel is disposed
     // This happens when the user closes the panel or when the panel is
@@ -121,8 +123,8 @@ export default class RequestView {
    * Private
    */
 
-  private buildUris(file: string[]): vscode.Uri[] {
-    return file.map(f => this.getUri(f))
+  private buildWebUris(file: string[]): vscode.Uri[] {
+    return file.map(f => this.getWebUri(f))
   }
 
   private getNonce(): string {
@@ -134,11 +136,17 @@ export default class RequestView {
     return text
   }
 
-  private getUri(file: string): vscode.Uri {
+  private getWebUri(file: string): vscode.Uri {
     return this._panel.webview.asWebviewUri(
       vscode.Uri.file(
         path.join(this._extensionPath, 'media', file)
       )
+    )
+  }
+
+  private getPath(file: string): vscode.Uri {
+    return vscode.Uri.file(
+      path.join(this._extensionPath, 'media', file)
     )
   }
 

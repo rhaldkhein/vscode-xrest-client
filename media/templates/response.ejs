@@ -120,6 +120,9 @@
     <%= typeof data === 'string' ? 
       data : JSON.stringify(data) %>
   </div>
+  <div class="data-res-headers dn">
+    <%= JSON.stringify(headers) %>
+  </div>
 
   <!-- Scripts -->
   <% scripts.forEach(uri => { %>

@@ -1,8 +1,6 @@
-
-// Axios config here
 module.exports = () => {
   return {
-    url: 'http://fakeapi.jsonparseronline.com/users?_page=1&_limit=8',
+    url: 'http://fakeapi.jsonparseronline.com/users',
     data: {
       a: undefined,
       b: null,
@@ -16,6 +14,8 @@ module.exports = () => {
       inject: '<b>this is a bold text</b>',
     },
     params: {
+      _page: 1,
+      _limit: 100,
       yeah: 'nice!'
     },
     headers: {

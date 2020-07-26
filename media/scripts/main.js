@@ -1,11 +1,18 @@
+/* eslint-disable curly */
 (function ($) {
 
-  let raw = false;
+  const reImage = /image\/.+/i;
+  const reJson = /.+\/json.+/i;
+
+  const headers = JSON.parse($('.data-res-headers').text());
   const jsonDepth = 2;
   const jsonOptions = {
     animateOpen: false,
     animateClose: false
   };
+
+  let raw = false;
+
 
   /**
    * Functions
@@ -34,6 +41,11 @@
     return false;
   }
 
+  function displayImage(data) {
+    $('.tab-body > div').text('Display of image is not supported yet.');
+    return true;
+  }
+
   /**
    * Handlers
    */
@@ -55,23 +67,26 @@
         $('.tab-' + tabName).addClass('db');
         break;
       default:
-        $('.tab-body').addClass('db');
         const data = $('.data-' + tabName).text();
         if (!raw) {
-          if (data.startsWith('<')) {
-            // Try to display XML/HTML
-            if (displayXml(data)) {
-              break;
-            }
-          } else {
-            // Try to display formatted JSON
-            if (displayJson(data)) {
-              break;
-            }
+
+          if (tabName === 'res-body' && reImage.test(headers['content-type'])) {
+            displayImage(data);
+            $('.tab-body').addClass('db');
+            break;
           }
+
+          // if (data.startsWith('<')) {
+          //   // Try to display XML/HTML
+          //   if (displayXml(data)) break;
+          // } else {
+          //   // Try to display formatted JSON
+          //   if (displayJson(data)) break;
+          // }
+
         }
         displayRaw(data);
-        break;
+        $('.tab-body').addClass('db');
     }
 
   }
