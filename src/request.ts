@@ -1,11 +1,12 @@
 import * as vscode from 'vscode'
-import { exec } from 'child_process'
+import { exec, ChildProcess } from 'child_process'
 import RequestView from './view/RequestView'
 
 export default class Request {
 
   private context: vscode.ExtensionContext
   private regexSupportedFiles: RegExp
+  private requestProcess: ChildProcess | undefined
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context
@@ -18,12 +19,16 @@ export default class Request {
     const fileName = vscode.window.activeTextEditor?.document.fileName
     if (fileName && this.regexSupportedFiles.test(fileName)) {
 
+      // Cancel previous request
+      await this.cancel()
+
       RequestView.createOrShow(this.context.extensionPath)
       await RequestView.currentView?.displayLoading()
 
-      exec(
+      // Execute new request
+      this.requestProcess = exec(
         'node ' + __dirname + '/scripts/request ' + fileName,
-        (err, stdout, stderr) => {
+        (err: any, stdout, stderr) => {
           if (err || stderr) {
             RequestView.currentView?.displayError(err || stderr)
             return
@@ -34,6 +39,7 @@ export default class Request {
           } catch (err) {
             RequestView.currentView?.displayError(err)
           }
+          this.requestProcess = undefined
         }
       )
 
@@ -41,6 +47,18 @@ export default class Request {
     }
     // Not handled, show error message
     vscode.window.showErrorMessage('Please select *.req.js file')
+  }
+
+  private async cancel(): Promise<void> {
+    return new Promise(resolve => {
+      if (this.requestProcess) {
+        this.requestProcess.kill()
+        this.requestProcess = undefined
+        setTimeout(() => resolve(), 300)
+      } else {
+        resolve()
+      }
+    })
   }
 
 }
