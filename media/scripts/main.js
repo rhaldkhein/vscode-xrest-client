@@ -2,8 +2,11 @@
 (function ($) {
 
   const isImage = /image\/.+/i;
-  const isJson = /.+\/json.+/i;
+  const isJson = /.+\/json.*/i;
+  const isXml = /.+\/xml.*/i;
+  const isHtml = /.+\/html.*/i;
 
+  const $body = $('.tab-body > div');
   const contentType = $('.res-content-type').val();
   const jsonDepth = 2;
   const jsonOptions = {
@@ -18,7 +21,7 @@
    */
 
   function writeRaw(data) {
-    $('.tab-raw > div').text(data);
+    $body.text(data);
   }
 
   function writeJson(data) {
@@ -29,21 +32,28 @@
         jsonDepth,
         jsonOptions
       );
-      $('.tab-body > div').replaceWith(jsonFormatter.render());
+      $body.replaceWith(jsonFormatter.render());
     } catch (error) {
       // Fallback to raw text display
-      $('.tab-body > div').text(data);
+      $body.text(data);
     }
-  }
-
-  function writeXml(data) {
-    // #TODO to implement
-    $('.tab-body > div').text('Display of XML/HTML is not supported yet.');
   }
 
   function writeImage(data) {
     // #TODO to implement
-    $('.tab-body > div').text('Display of image is not supported yet.');
+    $body.text('Display of image is not supported yet.');
+  }
+
+  function writeXml(data) {
+    // #TODO to implement
+    // $body.text('Display of XML is not supported yet.');
+    $body.text(data);
+  }
+
+  function writeHtml(data) {
+    // #TODO to implement
+    // $body.text('Display of HTML is not supported yet.');
+    $body.text(data);
   }
 
   /**
@@ -72,32 +82,38 @@
       default:
         const data = $('.data-' + tabName).text();
 
-        if (raw) {
-          writeRaw(data);
-          $('.tab-raw').addClass('db');
-          break;
-        }
+        if (!raw) {
+          // User want to display formatted data
 
-        if (tabName === 'res-body') {
+          if (tabName === 'res-body') {
 
-          if (isImage.test(contentType)) {
-            writeImage(data);
-          } else if (isJson.test(contentType)) {
-            writeJson(data);
+            if (isJson.test(contentType)) {
+              writeJson(data);
+            } else if (isImage.test(contentType)) {
+              writeImage(data);
+            } else if (isXml.test(contentType)) {
+              writeXml(data);
+            } else if (isHtml.test(contentType)) {
+              writeHtml(data);
+            } else {
+              writeRaw(data);
+            }
+
           } else {
-            writeRaw(data);
+
+            if (data.startsWith('<')) {
+              // Try to display XML/HTML
+              writeXml(data);
+            } else {
+              // Try to display formatted JSON
+              writeJson(data);
+            }
+
           }
 
         } else {
-
-          if (data.startsWith('<')) {
-            // Try to display XML/HTML
-            writeXml(data);
-          } else {
-            // Try to display formatted JSON
-            writeJson(data);
-          }
-
+          // Display raw data
+          writeRaw(data);
         }
 
         $('.tab-body').addClass('db');

@@ -67,7 +67,7 @@ export default class RequestView {
       'styles/style.css'
     ])
 
-    this._panel.iconPath = this.getPath('images/logo-head-256.png')
+    this._panel.iconPath = this.getFileUri('images/logo-head-256.png')
 
     // Listen for when the panel is disposed
     // This happens when the user closes the panel or when the panel is
@@ -80,7 +80,7 @@ export default class RequestView {
     Promise<void> {
 
     this._panel.webview.html = await renderFile(
-      path.join(this._extensionPath, 'media', 'templates/loading.ejs'),
+      this.getPath('templates/loading.ejs'),
       this.getTemplateDefaultData(),
       { cache: true }
     )
@@ -91,7 +91,7 @@ export default class RequestView {
     Promise<void> {
 
     this._panel.webview.html = await renderFile(
-      path.join(this._extensionPath, 'media', 'templates/response.ejs'),
+      this.getPath('templates/response.ejs'),
       { ...response, ...this.getTemplateDefaultData() },
       { cache: true }
     )
@@ -102,7 +102,7 @@ export default class RequestView {
     Promise<void> {
 
     this._panel.webview.html = await renderFile(
-      path.join(this._extensionPath, 'media', 'templates/error.ejs'),
+      this.getPath('templates/error.ejs'),
       this.getTemplateDefaultData(),
       { cache: true }
     )
@@ -137,17 +137,15 @@ export default class RequestView {
   }
 
   private getWebUri(file: string): vscode.Uri {
-    return this._panel.webview.asWebviewUri(
-      vscode.Uri.file(
-        path.join(this._extensionPath, 'media', file)
-      )
-    )
+    return this._panel.webview.asWebviewUri(vscode.Uri.file(this.getPath(file)))
   }
 
-  private getPath(file: string): vscode.Uri {
-    return vscode.Uri.file(
-      path.join(this._extensionPath, 'media', file)
-    )
+  private getFileUri(file: string): vscode.Uri {
+    return vscode.Uri.file(this.getPath(file))
+  }
+
+  private getPath(file: string): string {
+    return path.join(this._extensionPath, 'media', file)
   }
 
   private getTemplateDefaultData(): any {
