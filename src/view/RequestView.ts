@@ -68,7 +68,7 @@ export default class RequestView {
 
     this._extensionPath = extensionPath
     this._panel = panel
-    this._panel.iconPath = this.getFileUri('images/logo-head-256.png')
+    this._panel.iconPath = this.getFileUri('images/logo-head-128.png')
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables)
 
     this._defaultStyles = this.buildStyleWebUris([
