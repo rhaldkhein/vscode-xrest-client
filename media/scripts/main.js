@@ -1,10 +1,10 @@
 /* eslint-disable curly */
 (function ($) {
 
-  const reImage = /image\/.+/i;
-  const reJson = /.+\/json.+/i;
+  const isImage = /image\/.+/i;
+  const isJson = /.+\/json.+/i;
 
-  const headers = JSON.parse($('.data-res-headers').text());
+  const contentType = $('.res-content-type').val();
   const jsonDepth = 2;
   const jsonOptions = {
     animateOpen: false,
@@ -13,16 +13,15 @@
 
   let raw = false;
 
-
   /**
    * Functions
    */
 
-  function displayRaw(data) {
-    $('.tab-body > div').text(data);
+  function writeRaw(data) {
+    $('.tab-raw > div').text(data);
   }
 
-  function displayJson(data) {
+  function writeJson(data) {
     // Display formatted JSON
     try {
       const jsonFormatter = new JSONFormatter(
@@ -31,19 +30,20 @@
         jsonOptions
       );
       $('.tab-body > div').replaceWith(jsonFormatter.render());
-      return true;
     } catch (error) {
-      return false;
+      // Fallback to raw text display
+      $('.tab-body > div').text(data);
     }
   }
 
-  function displayXml(data) {
-    return false;
+  function writeXml(data) {
+    // #TODO to implement
+    $('.tab-body > div').text('Display of XML/HTML is not supported yet.');
   }
 
-  function displayImage(data) {
+  function writeImage(data) {
+    // #TODO to implement
     $('.tab-body > div').text('Display of image is not supported yet.');
-    return true;
   }
 
   /**
@@ -66,26 +66,40 @@
       case 'res-headers':
         $('.tab-' + tabName).addClass('db');
         break;
+      case 'req-params':
+      case 'req-body':
+      case 'res-body':
       default:
         const data = $('.data-' + tabName).text();
-        if (!raw) {
 
-          if (tabName === 'res-body' && reImage.test(headers['content-type'])) {
-            displayImage(data);
-            $('.tab-body').addClass('db');
-            break;
+        if (raw) {
+          writeRaw(data);
+          $('.tab-raw').addClass('db');
+          break;
+        }
+
+        if (tabName === 'res-body') {
+
+          if (isImage.test(contentType)) {
+            writeImage(data);
+          } else if (isJson.test(contentType)) {
+            writeJson(data);
+          } else {
+            writeRaw(data);
           }
 
-          // if (data.startsWith('<')) {
-          //   // Try to display XML/HTML
-          //   if (displayXml(data)) break;
-          // } else {
-          //   // Try to display formatted JSON
-          //   if (displayJson(data)) break;
-          // }
+        } else {
+
+          if (data.startsWith('<')) {
+            // Try to display XML/HTML
+            writeXml(data);
+          } else {
+            // Try to display formatted JSON
+            writeJson(data);
+          }
 
         }
-        displayRaw(data);
+
         $('.tab-body').addClass('db');
     }
 

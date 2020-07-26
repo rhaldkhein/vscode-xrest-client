@@ -57,7 +57,7 @@ export default class RequestView {
 
     this._scripts = this.buildWebUris([
       'scripts/cash.js',
-      'scripts/json-formatter.umd.js',
+      'scripts/json-formatter.js',
       'scripts/main.js'
     ])
 
