@@ -1,7 +1,7 @@
 /* eslint-disable curly */
 (function ($) {
 
-  const debug = true;
+  const debug = false;
   const reqFormatter = $('.req-formatter').val();
   const resFormatter = $('.res-formatter').val();
   const jsonDepth = 2;
@@ -59,6 +59,40 @@
     $('.tab-body > div').text(data);
   }
 
+  function displayDataTab(name) {
+    if (raw) {
+      $('.tab-raw-' + name).addClass('db');
+      return;
+    }
+    const data = $('.tab-raw-' + name).text();
+    switch (name) {
+      case 'req-params':
+        writeJson(data);
+        break;
+      case 'req-body':
+        if (reqFormatter === 'json') {
+          writeJson(data);
+        } else {
+          writeRaw(data);
+        }
+        break;
+      case 'res-body':
+        if (resFormatter === 'json') {
+          writeJson(data);
+        } else if (resFormatter === 'image') {
+          writeImage(data);
+        } else if (resFormatter === 'xml') {
+          writeXml(data);
+        } else if (resFormatter === 'html') {
+          writeHtml(data);
+        } else {
+          writeRaw(data);
+        }
+        break;
+    }
+    $('.tab-body').addClass('db');
+  }
+
   /**
    * Handlers
    */
@@ -79,43 +113,8 @@
       case 'res-headers':
         $('.tab-' + tabName).addClass('db');
         break;
-      case 'req-params':
-      case 'req-body':
-      case 'res-body':
       default:
-
-        if (raw) {
-          $('.tab-raw-' + tabName).addClass('db');
-          break;
-        }
-
-        const data = $('.tab-raw-' + tabName).text();
-
-        if (tabName === 'res-body') {
-
-          if (resFormatter === 'json') {
-            writeJson(data);
-          } else if (resFormatter === 'image') {
-            writeImage(data);
-          } else if (resFormatter === 'xml') {
-            writeXml(data);
-          } else if (resFormatter === 'html') {
-            writeHtml(data);
-          } else {
-            writeRaw(data);
-          }
-
-        } else {
-
-          if (reqFormatter === 'json') {
-            writeJson(data);
-          } else {
-            writeRaw(data);
-          }
-
-        }
-
-        $('.tab-body').addClass('db');
+        displayDataTab(tabName);
     }
 
   }
@@ -140,5 +139,7 @@
 
   const $rawButton = $('.toggle-raw');
   $rawButton.on('click', rawButtonClickHandler);
+
+  log(`formatters: req (${reqFormatter}) -> res (${resFormatter})`);
 
 })($);

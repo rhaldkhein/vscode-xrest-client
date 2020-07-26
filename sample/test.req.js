@@ -16,7 +16,12 @@ module.exports = () => {
     params: {
       _page: 1,
       _limit: 100,
-      yeah: 'nice!'
+      yeah: 'nice!',
+      inner: {
+        a: {
+          b: 'c'
+        }
+      }
     },
     headers: {
       'x-custom': 'custom data'

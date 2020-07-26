@@ -1,3 +1,4 @@
+// tslint:disable no-string-literal
 import * as path from 'path'
 import * as vscode from 'vscode'
 import { renderFile } from 'ejs'
@@ -59,10 +60,7 @@ export default class RequestView {
   private _defaultStyles: vscode.Uri[]
   private _defaultScripts: vscode.Uri[]
 
-  private _formatters: {
-    raw: Formatter
-    json: Formatter
-  }
+  private _formatters: { [name: string]: Formatter }
 
   constructor(
     panel: vscode.WebviewPanel,
@@ -74,10 +72,12 @@ export default class RequestView {
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables)
 
     this._defaultStyles = this.buildStyleWebUris([
+      'formatters/json.css',
       'styles/tachyons.min.css',
       'styles/style.css'
     ])
     this._defaultScripts = this.buildScriptWebUris([
+      'formatters/json.js',
       'scripts/cash.js',
       'scripts/main.js'
     ])
@@ -89,9 +89,15 @@ export default class RequestView {
         scripts: this.buildScriptWebUris([])
       },
       json: {
+        // Just placeholder, json already added as default
         formatter: 'json',
-        styles: this.buildStyleWebUris(['formatters/json.css']),
-        scripts: this.buildScriptWebUris(['formatters/json.js'])
+        styles: this.buildStyleWebUris([]),
+        scripts: this.buildScriptWebUris([])
+      },
+      image: {
+        formatter: 'image',
+        styles: this.buildStyleWebUris([]),
+        scripts: this.buildScriptWebUris([])
       }
       // #ADD formatters
     }
@@ -102,20 +108,12 @@ export default class RequestView {
     response: any):
     Promise<void> {
 
-    let reqFormatter: Formatter | undefined
-    let resFormatter: Formatter | undefined
-
-    if (isJson.test(this.getContentType(response.config.headers))) {
-      reqFormatter = this._formatters.json
-    }
-
-    if (isJson.test(this.getContentType(response.headers))) {
-      resFormatter = this._formatters.json
-    }
+    const req = this.getFormatter(this.getContentType(response.config.headers))
+    const res = this.getFormatter(this.getContentType(response.headers))
 
     this._panel.webview.html = await renderFile(
       this.getPath('templates/response.ejs'),
-      { ...response, ...this.getTemplateData(reqFormatter, resFormatter) },
+      { ...response, ...this.getTemplateData(req, res) },
       { cache: true }
     )
 
@@ -174,6 +172,15 @@ export default class RequestView {
     return ''
   }
 
+  private getFormatter(contentType: string): Formatter {
+    if (isJson.test(contentType)) {
+      return this._formatters['json']
+    } else if (isImage.test(contentType)) {
+      return this._formatters['image']
+    }
+    return this._formatters['raw']
+  }
+
   private getNonce(): string {
     let text = ''
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -205,7 +212,7 @@ export default class RequestView {
     any {
 
     // Fix duplicate formatter
-    const defaultFormatter = this._formatters.raw
+    const defaultFormatter = this._formatters['raw']
 
     return {
       cspNonce: this.getNonce(),
