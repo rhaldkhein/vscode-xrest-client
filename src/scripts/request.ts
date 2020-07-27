@@ -2,7 +2,7 @@
 import axios, { AxiosResponse } from 'axios'
 import path = require('path')
 import { glob } from 'glob'
-import _defaults from 'lodash.defaults'
+import _defaults from 'lodash.defaultsdeep'
 
 function print(response: AxiosResponse<any>): void {
   const { config, status, headers, data } = response
@@ -22,8 +22,12 @@ const request = require(file)
 let commons: any = {}
 
 // Compile common js files
-const startDir = path.resolve(path.dirname(file), '../..')
-const files = glob.sync(startDir + '/**/.req.js')
+const currDir = path.dirname(file)
+const startDir = path.resolve(currDir, '../..')
+const files = glob.sync(
+  startDir + '/**/*.rc.js',
+  { ignore: currDir + '/*/**/*' }
+)
 files.forEach(file => {
   const value = require(file)
   commons = _defaults(

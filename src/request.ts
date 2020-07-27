@@ -31,6 +31,8 @@ export default class Request {
         (err: any, stdout, stderr) => {
           if (err || stderr) {
             RequestView.currentView?.displayError(err || stderr)
+            // tslint:disable-next-line: no-console
+            console.error(err || stderr)
             return
           }
           try {

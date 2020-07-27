@@ -1,3 +1,3 @@
-module.exports = () => {
-  return 'http://jsonplaceholder.typicode.com/todos/1';
+module.exports = {
+  url: 'http://jsonplaceholder.typicode.com/todos/1'
 };
