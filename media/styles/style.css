@@ -44,6 +44,8 @@ button.toggle.selected {
 .error { color: var(--vscode-terminal-ansiBrightRed); }
 .warning { color: var(--vscode-terminal-ansiYellow); }
 .success { color: var(--vscode-terminal-ansiGreen); }
+.cyan { color: var(--vscode-terminal-ansiBrightCyan); }
+.magenta { color: var(--vscode-terminal-ansiBrightMagenta); }
 .bg-sidebar { background-color: var(--vscode-sideBar-background); }
 .bg-editor { background-color: var(--vscode-editor-background); }
 

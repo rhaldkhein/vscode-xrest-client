@@ -1,21 +1,37 @@
+// tslint:disable no-var-requires no-console
 import axios, { AxiosResponse } from 'axios'
-
-const file = process.argv[2]
-// tslint:disable-next-line: no-var-requires
-const config = require(file)
+import path = require('path')
+import { glob } from 'glob'
+import _defaults from 'lodash.defaults'
 
 function print(response: AxiosResponse<any>): void {
   const { config, status, headers, data } = response
-  // tslint:disable-next-line: no-console
   console.log(JSON.stringify({ config, status, headers, data }))
 }
 
 function printError(err: any): void {
-  // tslint:disable-next-line: no-console
   console.error({
     errno: err.errno,
     code: err.code,
     message: err.message
+  })
+}
+
+const file = process.argv[2]
+const request = require(file)
+const isfn = typeof request === 'function'
+let commons: any
+
+if (isfn) {
+  commons = {}
+  const startDir = path.resolve(path.dirname(file), '../..')
+  const files = glob.sync(startDir + '/**/.req.js')
+  files.forEach(file => {
+    const value = require(file)
+    commons = _defaults(
+      typeof value === 'function' ? value(commons) : value,
+      commons
+    )
   })
 }
 
@@ -29,7 +45,7 @@ axios.interceptors.request.use(
   }
 )
 
-axios(typeof config === 'function' ? config() : config)
+axios(isfn ? request(commons) : request)
   .then(print)
   .catch(err => {
     if (err.response) {

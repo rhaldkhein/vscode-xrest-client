@@ -22,7 +22,8 @@
 }
 .json-formatter-row .json-formatter-string,
 .json-formatter-row .json-formatter-stringifiable {
-  color: var(--vscode-terminal-ansiBrightCyan);
+  /* color: var(--vscode-terminal-ansiBrightCyan); */
+  color: var(--vscode-debugTokenExpression-string);
   word-wrap: break-word;
 }
 .json-formatter-row .json-formatter-number {
@@ -41,7 +42,7 @@
   color: var(--vscode-terminal-foreground);
 }
 .json-formatter-row .json-formatter-date {
-  color: var(--vscode-terminal-ansiYellow);
+  color: var(--vscode-terminal-ansiMagenta);
 }
 .json-formatter-row .json-formatter-url {
   text-decoration: underline;
