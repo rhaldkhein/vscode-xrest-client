@@ -16,7 +16,8 @@ export default class Request {
   public async send(): Promise<void> {
 
     // Execute request and display to webview panel
-    const fileName = vscode.window.activeTextEditor?.document.fileName
+    const fileName = vscode.window
+      .activeTextEditor?.document.fileName
     if (fileName && this.regexSupportedFiles.test(fileName)) {
 
       // Cancel previous request
@@ -25,9 +26,15 @@ export default class Request {
       RequestView.createOrShow(this.context.extensionPath)
       await RequestView.currentView?.displayLoading()
 
+      const parts = [
+        'node',
+        `"${__dirname}/scripts/request"`,
+        `"${fileName}"`
+      ]
+
       // Execute new request
       this.requestProcess = exec(
-        'node ' + __dirname + '/scripts/request ' + fileName,
+        parts.join(' '),
         (err: any, stdout, stderr) => {
           if (err || stderr) {
             RequestView.currentView?.displayError(err || stderr)
@@ -37,9 +44,11 @@ export default class Request {
           }
           try {
             RequestView.currentView?.displayResponse(
-              JSON.parse(stdout || stderr))
+              JSON.parse(stdout))
           } catch (err) {
             RequestView.currentView?.displayError(err)
+            // tslint:disable-next-line: no-console
+            console.error(err)
           }
           this.requestProcess = undefined
         }
@@ -52,6 +61,7 @@ export default class Request {
   }
 
   private async cancel(): Promise<void> {
+
     return new Promise(resolve => {
       if (this.requestProcess) {
         this.requestProcess.kill()
