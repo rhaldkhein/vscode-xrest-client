@@ -10,7 +10,7 @@ export default class Request {
 
   constructor(context: vscode.ExtensionContext) {
     this.context = context
-    this.regexSupportedFiles = /.+\.req\.js$/i
+    this.regexSupportedFiles = /.+[^\\\/]\.req\.js$/i
   }
 
   public async send(): Promise<void> {

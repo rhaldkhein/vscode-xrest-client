@@ -6,7 +6,13 @@
   <div class="topbar">
     <div class="flex items-center mb1">
       <div class="pv1 ph2 bg-sidebar br2 mr2"><%= config.method.toUpperCase() %></div>
-      <div class="word-wrap"><%= config.url %></div>
+      <div class="word-wrap">
+        <%= 
+          config.url.indexOf('://') > -1 ? 
+            config.url :
+            (config.baseURL || '') + config.url 
+        %>
+      </div>
     </div>
     <div class="pv1 ph2 bg-sidebar br2 mb3 flex justify-between">
       <div>

@@ -19,22 +19,20 @@ function printError(err: any): void {
 
 const file = process.argv[2]
 const request = require(file)
-const isfn = typeof request === 'function'
-let commons: any
+let commons: any = {}
 
-if (isfn) {
-  commons = {}
-  const startDir = path.resolve(path.dirname(file), '../..')
-  const files = glob.sync(startDir + '/**/.req.js')
-  files.forEach(file => {
-    const value = require(file)
-    commons = _defaults(
-      typeof value === 'function' ? value(commons) : value,
-      commons
-    )
-  })
-}
+// Compile common js files
+const startDir = path.resolve(path.dirname(file), '../..')
+const files = glob.sync(startDir + '/**/.req.js')
+files.forEach(file => {
+  const value = require(file)
+  commons = _defaults(
+    typeof value === 'function' ? value(commons) : value,
+    commons
+  )
+})
 
+// Add metadata and other stuff before request
 axios.interceptors.request.use(
   (config: any) => {
     config.metadata = { ts: Date.now() }
@@ -45,7 +43,23 @@ axios.interceptors.request.use(
   }
 )
 
-axios(isfn ? request(commons) : request)
+// Resolve request config
+let requestConfig = typeof request === 'function' ? request(commons) : request
+
+// Fix string config
+if (typeof requestConfig === 'string') {
+  requestConfig = { url: requestConfig }
+}
+
+// Inject base url
+if (commons.baseURL) requestConfig.baseURL = commons.baseURL
+
+// Inject common headers
+if (!requestConfig.headers) requestConfig.headers = {}
+_defaults(requestConfig.headers, commons.headers)
+
+// Execute request
+axios(requestConfig)
   .then(print)
   .catch(err => {
     if (err.response) {
