@@ -1,6 +1,6 @@
 module.exports = () => {
   return {
-
+    foo: 'bar',
     // Auto add to request
     baseURL: 'http://jsonplaceholder.typicode.com',
     headers: {

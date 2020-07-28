@@ -3,72 +3,25 @@ import axios, { AxiosResponse } from 'axios'
 import * as path from 'path'
 import { glob } from 'glob'
 import _defaults from 'lodash.defaultsdeep'
-import { URL } from 'url'
-import fs from 'fs-extra'
-import { homedir } from 'os'
-import setCookieParser from 'set-cookie-parser'
+import CookieManager from './cookie'
 
-function print(response: AxiosResponse<any>): void {
+function print(
+  response: AxiosResponse<any>):
+  void {
+
   const { config, status, headers, data } = response
   console.log(JSON.stringify({ config, status, headers, data }))
 }
 
-function printError(err: any): void {
-  console.error({
-    errno: err.errno,
-    code: err.code,
-    message: err.message
-  })
-}
-
-function storeResponse(
-  response: any):
+function printError(
+  err: any):
   void {
 
-  const { config, headers } = response
-  // Store cookie
-  if (headers.hasOwnProperty('set-cookie')) {
-    const cookieFile = storageDir + '/cookies/' + getHost(config)
-    let oldCookies: setCookieParser.Cookie[] = []
-    if (fs.existsSync(cookieFile)) {
-      oldCookies = JSON.parse(
-        fs.readFileSync(cookieFile).toString())
-    }
-    const newCookies = setCookieParser(response)
-    newCookies.forEach(cookie => {
-      const i = oldCookies.findIndex(c => c.name === cookie.name)
-      if (i > -1) {
-        oldCookies.splice(i, 1, cookie)
-      } else {
-        oldCookies.push(cookie)
-      }
-    })
-    fs.outputFile(
-      cookieFile,
-      JSON.stringify(oldCookies)
-    )
-  }
+  const { errno, code, message } = err
+  console.error(JSON.stringify({ errno, code, message }))
 }
 
-function cleanHost(
-  host: string):
-  string {
-
-  return host.replace('www.', '').replace(/\./g, '_')
-}
-
-function getHost(
-  config: any):
-  string {
-
-  const url = new URL(
-    config.url.indexOf('://') > -1 ?
-      config.url : config.baseURL
-  )
-  return cleanHost(url.host)
-}
-
-const storageDir = homedir() + '/.xrest-client'
+const cookieManager = new CookieManager()
 const file = process.argv[2]
 const request = require(file)
 let commons: any = {}
@@ -115,28 +68,13 @@ if (!requestConfig.headers) requestConfig.headers = {}
 _defaults(requestConfig.headers, commons.headers)
 
 // Inject cookie
-const cookieFile = storageDir + '/cookies/' + getHost(requestConfig)
-if (fs.existsSync(cookieFile)) {
-  const now = new Date()
-  const cookieBuffer = fs.readFileSync(cookieFile)
-  let cookies: setCookieParser.Cookie[] = JSON.parse(
-    cookieBuffer.toString())
-  // Filter cookies
-  cookies = cookies.filter(cookie => {
-    if (cookie.expires) {
-      return now < (new Date(cookie.expires as any))
-    }
-    return true
-  })
-  // Build cookie string
-  requestConfig.headers['Cookie'] = cookies.map(
-    cookie => cookie.name + '=' + cookie.value).join('; ')
-}
+const cookie = cookieManager.fetch(requestConfig)
+if (cookie) requestConfig.headers['Cookie'] = cookie
 
 // Execute request
 axios(requestConfig)
   .then(response => {
-    storeResponse(response)
+    cookieManager.store(response)
     print(response)
   })
   .catch(err => {

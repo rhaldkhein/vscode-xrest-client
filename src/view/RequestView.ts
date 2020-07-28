@@ -68,15 +68,15 @@ export default class RequestView {
 
     this._extensionPath = extensionPath
     this._panel = panel
-    this._panel.iconPath = this.getFileUri('images/logo-head-128.png')
+    this._panel.iconPath = this._getFileUri('images/logo-head-128.png')
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables)
 
-    this._defaultStyles = this.buildStyleWebUris([
+    this._defaultStyles = this._buildStyleWebUris([
       'formatters/json.css',
       'styles/tachyons.min.css',
       'styles/style.css'
     ])
-    this._defaultScripts = this.buildScriptWebUris([
+    this._defaultScripts = this._buildScriptWebUris([
       'formatters/json.js',
       'scripts/cash.js',
       'scripts/main.js'
@@ -85,19 +85,19 @@ export default class RequestView {
     this._formatters = {
       raw: {
         formatter: 'raw',
-        styles: this.buildStyleWebUris([]),
-        scripts: this.buildScriptWebUris([])
+        styles: this._buildStyleWebUris([]),
+        scripts: this._buildScriptWebUris([])
       },
       json: {
         // Just placeholder, json already added as default
         formatter: 'json',
-        styles: this.buildStyleWebUris([]),
-        scripts: this.buildScriptWebUris([])
+        styles: this._buildStyleWebUris([]),
+        scripts: this._buildScriptWebUris([])
       },
       image: {
         formatter: 'image',
-        styles: this.buildStyleWebUris([]),
-        scripts: this.buildScriptWebUris([])
+        styles: this._buildStyleWebUris([]),
+        scripts: this._buildScriptWebUris([])
       }
       // #ADD formatters
     }
@@ -108,12 +108,12 @@ export default class RequestView {
     response: any):
     Promise<void> {
 
-    const req = this.getFormatter(this.getContentType(response.config.headers))
-    const res = this.getFormatter(this.getContentType(response.headers))
+    const req = this._getFormatter(this._getContentType(response.config.headers))
+    const res = this._getFormatter(this._getContentType(response.headers))
 
     this._panel.webview.html = await renderFile(
-      this.getPath('templates/response.ejs'),
-      { ...response, ...this.getTemplateData(req, res) },
+      this._getPath('templates/response.ejs'),
+      { ...response, ...this._getTemplateData(req, res) },
       { cache: true }
     )
 
@@ -123,8 +123,8 @@ export default class RequestView {
     Promise<void> {
 
     this._panel.webview.html = await renderFile(
-      this.getPath('templates/loading.ejs'),
-      this.getTemplateData(),
+      this._getPath('templates/loading.ejs'),
+      this._getTemplateData(),
       { cache: true }
     )
   }
@@ -134,8 +134,8 @@ export default class RequestView {
     Promise<void> {
 
     this._panel.webview.html = await renderFile(
-      this.getPath('templates/error.ejs'),
-      this.getTemplateData(),
+      this._getPath('templates/error.ejs'),
+      this._getTemplateData(),
       { cache: true }
     )
   }
@@ -155,15 +155,15 @@ export default class RequestView {
    * Private
    */
 
-  private buildScriptWebUris(file: string[]): vscode.Uri[] {
-    return file.map(f => this.getWebUri(f))
+  private _buildScriptWebUris(file: string[]): vscode.Uri[] {
+    return file.map(f => this._getWebUri(f))
   }
 
-  private buildStyleWebUris(file: string[]): vscode.Uri[] {
-    return file.map(f => this.getWebUri(f))
+  private _buildStyleWebUris(file: string[]): vscode.Uri[] {
+    return file.map(f => this._getWebUri(f))
   }
 
-  private getContentType(headers: any): string {
+  private _getContentType(headers: any): string {
     for (const key in headers) {
       if (key.toLowerCase() === 'content-type') {
         return headers[key]
@@ -172,7 +172,7 @@ export default class RequestView {
     return ''
   }
 
-  private getFormatter(contentType: string): Formatter {
+  private _getFormatter(contentType: string): Formatter {
     if (isJson.test(contentType)) {
       return this._formatters['json']
     } else if (isImage.test(contentType)) {
@@ -181,7 +181,7 @@ export default class RequestView {
     return this._formatters['raw']
   }
 
-  private getNonce(): string {
+  private _getNonce(): string {
     let text = ''
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     for (let i = 0; i < 32; i++) {
@@ -190,23 +190,23 @@ export default class RequestView {
     return text
   }
 
-  private getWebUri(file: string): vscode.Uri {
-    return this._panel.webview.asWebviewUri(vscode.Uri.file(this.getPath(file)))
+  private _getWebUri(file: string): vscode.Uri {
+    return this._panel.webview.asWebviewUri(vscode.Uri.file(this._getPath(file)))
   }
 
-  private getFileUri(file: string): vscode.Uri {
-    return vscode.Uri.file(this.getPath(file))
+  private _getFileUri(file: string): vscode.Uri {
+    return vscode.Uri.file(this._getPath(file))
   }
 
-  private getPath(file: string): string {
+  private _getPath(file: string): string {
     return path.join(this._extensionPath, 'media', file)
   }
 
-  private removeDuplicates(arr: any[]): any[] {
+  private _removeDuplicates(arr: any[]): any[] {
     return [...new Set(arr)]
   }
 
-  private getTemplateData(
+  private _getTemplateData(
     reqFormatter?: Formatter,
     resFormatter?: Formatter):
     any {
@@ -215,15 +215,15 @@ export default class RequestView {
     const defaultFormatter = this._formatters['raw']
 
     return {
-      cspNonce: this.getNonce(),
+      cspNonce: this._getNonce(),
       cspSource: this._panel.webview.cspSource,
       codes,
-      styles: this.removeDuplicates([
+      styles: this._removeDuplicates([
         ...(reqFormatter || defaultFormatter).styles,
         ...(resFormatter || defaultFormatter).styles,
         ...this._defaultStyles
       ]),
-      scripts: this.removeDuplicates([
+      scripts: this._removeDuplicates([
         ...(reqFormatter || defaultFormatter).scripts,
         ...(resFormatter || defaultFormatter).scripts,
         ...this._defaultScripts

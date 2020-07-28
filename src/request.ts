@@ -4,13 +4,13 @@ import RequestView from './view/RequestView'
 
 export default class Request {
 
-  private context: vscode.ExtensionContext
-  private regexSupportedFiles: RegExp
-  private requestProcess: ChildProcess | undefined
+  private _context: vscode.ExtensionContext
+  private _regexSupportedFile: RegExp
+  private _requestProcess: ChildProcess | undefined
 
   constructor(context: vscode.ExtensionContext) {
-    this.context = context
-    this.regexSupportedFiles = /.+[^\\\/]\.req\.js$/i
+    this._context = context
+    this._regexSupportedFile = /.+[^\\\/]\.req\.js$/i
   }
 
   public async send(): Promise<void> {
@@ -18,12 +18,12 @@ export default class Request {
     // Execute request and display to webview panel
     const fileName = vscode.window
       .activeTextEditor?.document.fileName
-    if (fileName && this.regexSupportedFiles.test(fileName)) {
+    if (fileName && this._regexSupportedFile.test(fileName)) {
 
       // Cancel previous request
-      await this.cancel()
+      await this._cancel()
 
-      RequestView.createOrShow(this.context.extensionPath)
+      RequestView.createOrShow(this._context.extensionPath)
       await RequestView.currentView?.displayLoading()
 
       const parts = [
@@ -33,7 +33,7 @@ export default class Request {
       ]
 
       // Execute new request
-      this.requestProcess = exec(
+      this._requestProcess = exec(
         parts.join(' '),
         (err: any, stdout, stderr) => {
           if (err || stderr) {
@@ -50,7 +50,7 @@ export default class Request {
             // tslint:disable-next-line: no-console
             console.error(err)
           }
-          this.requestProcess = undefined
+          this._requestProcess = undefined
         }
       )
 
@@ -60,12 +60,12 @@ export default class Request {
     vscode.window.showErrorMessage('Please select *.req.js file')
   }
 
-  private async cancel(): Promise<void> {
+  private async _cancel(): Promise<void> {
 
     return new Promise(resolve => {
-      if (this.requestProcess) {
-        this.requestProcess.kill()
-        this.requestProcess = undefined
+      if (this._requestProcess) {
+        this._requestProcess.kill()
+        this._requestProcess = undefined
         setTimeout(() => resolve(), 300)
       } else {
         resolve()

@@ -4,7 +4,7 @@
   const debug = false;
   const reqFormatter = $('.req-formatter').val();
   const resFormatter = $('.res-formatter').val();
-  const jsonDepth = 2;
+  const jsonDepth = 3;
   const jsonOptions = {
     animateOpen: false,
     animateClose: false
