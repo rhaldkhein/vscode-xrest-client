@@ -29,7 +29,7 @@ function getCommon(): any {
   const startDir = path.resolve(currDir, '../..')
   const files = glob.sync(
     startDir + '/**/*.rc.js',
-    { ignore: currDir + '/*/**/*' }
+    { ignore: currDir + '/*/**/*', strict: false }
   )
   files.forEach(file => {
     const value = require(file)
