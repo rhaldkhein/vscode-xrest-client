@@ -21,7 +21,9 @@ class Response {
   }
 
   public async success(response: any): Promise<void> {
-    this._save(response)
+    if (response.status < 300) {
+      this._save(response)
+    }
     this.display(response)
   }
 
@@ -46,7 +48,6 @@ class Response {
 
   private async _save(response: any): Promise<void> {
     const lastResFile = this._dirLast + getHostPath(response.config)
-    // We dont need to save current command
     return fs.outputFile(lastResFile, JSON.stringify(response))
   }
 
