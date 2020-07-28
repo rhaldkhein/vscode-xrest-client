@@ -12,7 +12,7 @@ Flexible REST API testing in Visual Studio Code using **Simple Javascript** 🤘
 - Import files for common config info
 - Auto persist cookies
 - Auto save last successful responses (200 status code)
-- Auto import `*.rc.js`
+- Auto import `*.rc.js` (common config files)
 - Load saved responses
 - And all features from Javascript 
 
@@ -27,14 +27,14 @@ The only requirements are to use specific file extensions.
 
 Dead simple example usage, with just URL.
 
-##### 1. Create a request file.
+#### 1. Create a request file.
 Write the following code inside `mytodos.req.js`
 ```js
 module.exports = 'http://jsonplaceholder.typicode.com/todos'
 ```
-##### 2. Send the request file.
+#### 2. Send the request file.
 Right click anyware inside editor and select `Send Request`.
-##### 3. View response panel.
+#### 3. View response panel.
 A response panel/tab view will auto show and give you complete information about the request.
 
 ## Advanced Usage
