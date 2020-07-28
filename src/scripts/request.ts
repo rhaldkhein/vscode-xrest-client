@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios'
 import * as path from 'path'
 import { glob } from 'glob'
 import _defaults from 'lodash.defaultsdeep'
-import CookieManager from './cookie'
+import CookieManager from './Cookie'
 
 function print(
   response: AxiosResponse<any>):

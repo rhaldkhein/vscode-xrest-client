@@ -1,13 +1,13 @@
 import { URL } from 'url'
-import { homedir } from 'os'
 import setCookieParser from 'set-cookie-parser'
 import fs from 'fs-extra'
+import config from '../config'
 
 class CookieManager {
   private _dir: string
 
   constructor() {
-    this._dir = homedir() + '/.xrest-client/cookies/'
+    this._dir = config.storagePath + '/cookies/'
   }
 
   public fetch(

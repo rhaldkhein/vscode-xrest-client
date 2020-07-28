@@ -1,16 +1,18 @@
 import * as vscode from 'vscode'
 import { exec, ChildProcess } from 'child_process'
-import RequestView from './view/RequestView'
+import Response from './Response'
 
 export default class Request {
 
   private _context: vscode.ExtensionContext
   private _regexSupportedFile: RegExp
   private _requestProcess: ChildProcess | undefined
+  private _responseManager: Response
 
   constructor(context: vscode.ExtensionContext) {
     this._context = context
     this._regexSupportedFile = /.+[^\\\/]\.req\.js$/i
+    this._responseManager = new Response()
   }
 
   public async send(): Promise<void> {
@@ -22,9 +24,7 @@ export default class Request {
 
       // Cancel previous request
       await this._cancel()
-
-      RequestView.createOrShow(this._context.extensionPath)
-      await RequestView.currentView?.displayLoading()
+      await this._responseManager.prepare(this._context.extensionPath)
 
       const parts = [
         'node',
@@ -37,16 +37,15 @@ export default class Request {
         parts.join(' '),
         (err: any, stdout, stderr) => {
           if (err || stderr) {
-            RequestView.currentView?.displayError(err || stderr)
+            this._responseManager.error(err || stderr)
             // tslint:disable-next-line: no-console
             console.error(err || stderr)
             return
           }
           try {
-            RequestView.currentView?.displayResponse(
-              JSON.parse(stdout))
+            this._responseManager.success(JSON.parse(stdout))
           } catch (err) {
-            RequestView.currentView?.displayError(err)
+            this._responseManager.error(err)
             // tslint:disable-next-line: no-console
             console.error(err)
           }
