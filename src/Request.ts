@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import { exec, ChildProcess } from 'child_process'
 import Response from './Response'
+import config from './config'
 
 export default class Request {
 
@@ -8,11 +9,13 @@ export default class Request {
   private _regexSupportedFile: RegExp
   private _requestProcess: ChildProcess | undefined
   private _responseManager: Response
+  private _output: vscode.OutputChannel
 
   constructor(context: vscode.ExtensionContext) {
     this._context = context
     this._regexSupportedFile = /.+[^\\\/]\.req\.js$/i
     this._responseManager = new Response()
+    this._output = vscode.window.createOutputChannel(config.name)
   }
 
   public async send(command: string): Promise<void> {
@@ -43,7 +46,7 @@ export default class Request {
           if (err || stderr) {
             this._responseManager.error(err || stderr)
             // tslint:disable-next-line: no-console
-            console.error(err || stderr)
+            this._output.appendLine((err && err.message) || stderr)
             return
           }
           try {
@@ -56,7 +59,7 @@ export default class Request {
           } catch (err) {
             this._responseManager.error(err)
             // tslint:disable-next-line: no-console
-            console.error(err)
+            this._output.appendLine(err.message)
           }
           this._requestProcess = undefined
         }
