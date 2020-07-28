@@ -58,6 +58,10 @@
       {
         "command": "vscode-xrest-client.sendRequest",
         "key": "ctrl+cmd+x"
+      },
+      {
+        "command": "vscode-xrest-client.showLastResponse",
+        "key": "ctrl+cmd+z"
       }
     ],
     "menus": {
