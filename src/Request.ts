@@ -15,7 +15,7 @@ export default class Request {
     this._responseManager = new Response()
   }
 
-  public async send(): Promise<void> {
+  public async send(command: string): Promise<void> {
 
     // Execute request and display to webview panel
     const fileName = vscode.window
@@ -24,12 +24,16 @@ export default class Request {
 
       // Cancel previous request
       await this._cancel()
-      await this._responseManager.prepare(this._context.extensionPath)
+      await this._responseManager.prepare(
+        command,
+        this._context.extensionPath
+      )
 
       const parts = [
         'node',
         `"${__dirname}/scripts/request"`,
-        `"${fileName}"`
+        `"${fileName}"`,
+        `"${command}"`
       ]
 
       // Execute new request
@@ -43,7 +47,12 @@ export default class Request {
             return
           }
           try {
-            this._responseManager.success(JSON.parse(stdout))
+            const data = JSON.parse(stdout)
+            if (data.command === 'show_last') {
+              this._responseManager.loadLast(data.config)
+            } else {
+              this._responseManager.success(data)
+            }
           } catch (err) {
             this._responseManager.error(err)
             // tslint:disable-next-line: no-console

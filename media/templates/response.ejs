@@ -17,16 +17,23 @@
     <div class="pv1 ph2 bg-sidebar br2 mb3 flex justify-between">
       <div>
         <% if (parseInt(status) >= 500) { %>
-        <div class="error"><%= status %> <%= codes[status] || 'Server Error'%></div>
+        <span class="error"><%= status %> <%= codes[status] || 'Server Error'%></span>
         <% } else if (parseInt(status) >= 400) { %>
-        <div class="error"><%= status %> <%= codes[status] || 'Client Error'%></div>
+        <span class="error"><%= status %> <%= codes[status] || 'Client Error'%></span>
         <% } else if (parseInt(status) >= 300) { %>
-        <div class="warning"><%= status %> <%= codes[status] || 'Redirection'%></div>
+        <span class="warning"><%= status %> <%= codes[status] || 'Redirection'%></span>
         <% } else if (parseInt(status) >= 200) { %>
-        <div class="success"><%= status %> <%= codes[status] || 'Success'%></div>
+        <span class="success"><%= status %> <%= codes[status] || 'Success'%></span>
+        <% } %>
+        <% if (command === 'show_last') { %>
+        <span> (Saved)</span>
         <% } %>
       </div>
+      <% if (command === 'new_request') { %>
       <div><%= Date.now() - config.metadata.ts %> ms</div>
+      <% } else if (command === 'show_last') { %>
+      <div><%= (new Date(config.metadata.ts)).toDateString() %></div>
+      <% } %>
     </div>
   </div>
 

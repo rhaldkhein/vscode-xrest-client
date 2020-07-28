@@ -6,11 +6,12 @@ import _defaults from 'lodash.defaultsdeep'
 import CookieManager from './Cookie'
 
 function print(
+  command: string,
   response: AxiosResponse<any>):
   void {
 
   const { config, status, headers, data } = response
-  console.log(JSON.stringify({ config, status, headers, data }))
+  console.log(JSON.stringify({ command, config, status, headers, data }))
 }
 
 function printError(
@@ -21,66 +22,87 @@ function printError(
   console.error(JSON.stringify({ errno, code, message }))
 }
 
-const cookieManager = new CookieManager()
-const file = process.argv[2]
-const request = require(file)
-let commons: any = {}
+function getCommon(): any {
 
-// Compile common js files
-const currDir = path.dirname(file)
-const startDir = path.resolve(currDir, '../..')
-const files = glob.sync(
-  startDir + '/**/*.rc.js',
-  { ignore: currDir + '/*/**/*' }
-)
-files.forEach(file => {
-  const value = require(file)
-  commons = _defaults(
-    typeof value === 'function' ? value(commons) : value,
-    commons
+  let common = {}
+  const currDir = path.dirname(file)
+  const startDir = path.resolve(currDir, '../..')
+  const files = glob.sync(
+    startDir + '/**/*.rc.js',
+    { ignore: currDir + '/*/**/*' }
   )
-})
-
-// Add metadata and other stuff before request
-axios.interceptors.request.use(
-  (config: any) => {
-    config.metadata = { ts: Date.now() }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
-
-// Resolve request config
-let requestConfig = typeof request === 'function' ? request(commons) : request
-
-// Fix string config
-if (typeof requestConfig === 'string') {
-  requestConfig = { url: requestConfig }
+  files.forEach(file => {
+    const value = require(file)
+    common = _defaults(
+      typeof value === 'function' ? value(common) : value,
+      common
+    )
+  })
+  return common
 }
 
-// Inject base url
-if (commons.baseURL) requestConfig.baseURL = commons.baseURL
+function send(
+  command: string,
+  config: any,
+  common: any):
+  void {
 
-// Inject common headers
-if (!requestConfig.headers) requestConfig.headers = {}
-_defaults(requestConfig.headers, commons.headers)
+  // Fix string config
+  if (typeof config === 'string') {
+    config = { url: config }
+  }
 
-// Inject cookie
-const cookie = cookieManager.fetch(requestConfig)
-if (cookie) requestConfig.headers['Cookie'] = cookie
+  // Inject base url
+  if (common.baseURL) config.baseURL = common.baseURL
+
+  // Cancel now, we only need url
+  if (command === 'show_last') {
+    print(command, { config } as any)
+    return
+  }
+
+  // Inject common headers
+  if (!config.headers) config.headers = {}
+  _defaults(config.headers, common.headers)
+
+  // Inject cookie
+  const cookie = cookieManager.fetch(config)
+  if (cookie) config.headers['Cookie'] = cookie
+
+  // Add metadata and other stuff before request
+  axios.interceptors.request.use(
+    (config: any) => {
+      config.metadata = { ts: Date.now() }
+      return config
+    },
+    (error) => {
+      return Promise.reject(error)
+    }
+  )
+
+  axios(config)
+    .then(response => {
+      cookieManager.store(response)
+      print(command, response)
+    })
+    .catch(err => {
+      if (err.response) {
+        print(command, err.response)
+      } else {
+        printError(err)
+      }
+    })
+}
+
+const cookieManager = new CookieManager()
+const file = process.argv[2]
+const command = process.argv[3]
+const request = require(file)
+
+// Resolve common config
+const common = getCommon()
+// Resolve request config
+const config = typeof request === 'function' ? request(common) : request
 
 // Execute request
-axios(requestConfig)
-  .then(response => {
-    cookieManager.store(response)
-    print(response)
-  })
-  .catch(err => {
-    if (err.response) {
-      print(err.response)
-    } else {
-      printError(err)
-    }
-  })
+send(command, config, common)

@@ -1,7 +1,7 @@
-import { URL } from 'url'
 import setCookieParser from 'set-cookie-parser'
 import fs from 'fs-extra'
 import config from '../config'
+import getHost from '../utils/getHost'
 
 class CookieManager {
   private _dir: string
@@ -14,7 +14,7 @@ class CookieManager {
     request: any):
     string | undefined {
 
-    const cookieFile = this._dir + this._getHost(request)
+    const cookieFile = this._dir + getHost(request)
     if (fs.existsSync(cookieFile)) {
       const now = new Date()
       const cookieBuffer = fs.readFileSync(cookieFile)
@@ -39,7 +39,7 @@ class CookieManager {
     const { config, headers } = response
     // Store cookie
     if (headers.hasOwnProperty('set-cookie')) {
-      const cookieFile = this._dir + this._getHost(config)
+      const cookieFile = this._dir + getHost(config)
       let oldCookies: setCookieParser.Cookie[] = []
       if (fs.existsSync(cookieFile)) {
         oldCookies = JSON.parse(
@@ -59,25 +59,6 @@ class CookieManager {
         JSON.stringify(oldCookies)
       )
     }
-  }
-
-
-  private _cleanHost(
-    host: string):
-    string {
-
-    return host.replace('www.', '').replace(/(\.|:)/g, '_')
-  }
-
-  private _getHost(
-    config: any):
-    string {
-
-    const url = new URL(
-      config.url.indexOf('://') > -1 ?
-        config.url : config.baseURL
-    )
-    return this._cleanHost(url.host)
   }
 
 }

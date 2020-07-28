@@ -38,36 +38,37 @@
     "vscode": "^1.47.0"
   },
   "activationEvents": [
-    "onCommand:vscode-xrest-client.send"
+    "onCommand:vscode-xrest-client.sendRequest",
+    "onCommand:vscode-xrest-client.showLastResponse"
   ],
   "contributes": {
     "commands": [
       {
-        "command": "vscode-xrest-client.send",
+        "command": "vscode-xrest-client.sendRequest",
         "category": "Xrest Client",
         "title": "Send Request"
       },
       {
-        "command": "vscode-xrest-client.showResponse",
+        "command": "vscode-xrest-client.showLastResponse",
         "category": "Xrest Client",
-        "title": "Show Saved Response"
+        "title": "Show Last Response"
       }
     ],
     "keybindings": [
       {
-        "command": "vscode-xrest-client.send",
+        "command": "vscode-xrest-client.sendRequest",
         "key": "ctrl+cmd+x"
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "command": "vscode-xrest-client.send",
+          "command": "vscode-xrest-client.sendRequest",
           "when": "resourceLangId == javascript",
           "group": "z_commands"
         },
         {
-          "command": "vscode-xrest-client.showResponse",
+          "command": "vscode-xrest-client.showLastResponse",
           "when": "resourceLangId == javascript",
           "group": "z_commands"
         }

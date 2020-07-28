@@ -105,6 +105,7 @@ export default class RequestView {
   }
 
   public async displayResponse(
+    command: string,
     response: any):
     Promise<void> {
 
@@ -113,7 +114,7 @@ export default class RequestView {
 
     this._panel.webview.html = await renderFile(
       this._getPath('templates/response.ejs'),
-      { ...response, ...this._getTemplateData(req, res) },
+      { ...response, ...this._getTemplateData(req, res), command },
       { cache: true }
     )
 
@@ -135,7 +136,7 @@ export default class RequestView {
 
     this._panel.webview.html = await renderFile(
       this._getPath('templates/error.ejs'),
-      this._getTemplateData(),
+      { ...this._getTemplateData(), message: err.message },
       { cache: true }
     )
   }

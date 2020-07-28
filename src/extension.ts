@@ -18,13 +18,19 @@ export function activate(context: vscode.ExtensionContext): void {
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
-  const commandSend = vscode.commands.registerCommand('vscode-xrest-client.send', async () => {
-    // The code you place here will be executed every time your command is executed
-    await request.send()
-  })
 
-  // Register commands
-  context.subscriptions.push(commandSend)
+  context.subscriptions.push(
+    vscode.commands.registerCommand('vscode-xrest-client.sendRequest', async () => {
+      // The code you place here will be executed every time your command is executed
+      await request.send('new_request')
+    })
+  )
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('vscode-xrest-client.showLastResponse', async () => {
+      await request.send('show_last')
+    })
+  )
 }
 
 // this method is called when your extension is deactivated
