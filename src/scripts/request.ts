@@ -22,11 +22,10 @@ function printError(
   console.error(JSON.stringify({ errno, code, message }))
 }
 
-function getCommon(): any {
+function getCommon(startDir: string, file: string): any {
 
   let common = {}
   const currDir = path.dirname(file)
-  const startDir = path.resolve(currDir, '../..')
   const files = glob.sync(
     startDir + '/**/*.rc.js',
     { ignore: currDir + '/*/**/*', strict: false }
@@ -46,6 +45,8 @@ function send(
   config: any,
   common: any):
   void {
+
+  const cookieManager = new CookieManager()
 
   // Fix string config
   if (typeof config === 'string') {
@@ -94,15 +95,21 @@ function send(
     })
 }
 
-const cookieManager = new CookieManager()
-const file = process.argv[2]
-const command = process.argv[3]
-const request = require(file)
+try {
 
-// Resolve common config
-const common = getCommon()
-// Resolve request config
-const config = typeof request === 'function' ? request(common) : request
+  const file = process.argv[2]
+  const command = process.argv[3]
+  const workspace = process.argv[4]
+  const request = require(file)
 
-// Execute request
-send(command, config, common)
+  // Resolve common config
+  const common = getCommon(workspace, file)
+  // Resolve request config
+  const config = typeof request === 'function' ? request(common) : request
+
+  // Execute request
+  send(command, config, common)
+
+} catch (error) {
+  printError(error)
+}

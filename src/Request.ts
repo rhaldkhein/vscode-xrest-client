@@ -32,11 +32,16 @@ export default class Request {
         this._context.extensionPath
       )
 
+      const workspace = vscode.workspace.getWorkspaceFolder(
+        vscode.Uri.file(fileName)
+      )?.uri.fsPath || ''
+
       const parts = [
         `"${process.argv[0]}"`,
         `"${__dirname}/scripts/request"`,
         `"${fileName}"`,
-        `"${command}"`
+        `"${command}"`,
+        `"${workspace}"`
       ]
 
       // Execute new request
@@ -44,7 +49,7 @@ export default class Request {
         parts.join(' '),
         (err: any, stdout, stderr) => {
           if (err || stderr) {
-            this._responseManager.error(err || stderr)
+            this._responseManager.error(err || JSON.parse(stderr))
             // tslint:disable-next-line: no-console
             this._output.appendLine((err && err.message) || stderr)
             return
