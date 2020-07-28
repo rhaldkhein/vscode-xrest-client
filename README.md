@@ -101,7 +101,10 @@ with email, password and custom headers
 */
 
 ```
-Note: Multiple rc files will be merged.
+Notes: 
+- Multiple rc files will be merged.
+- `baseURL` will auto merge to `url` in req file
+- `headers` will also auto merge to `headers` in req file
 
 -----------------------------------------------------------------------------------------------------------
 
