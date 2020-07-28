@@ -6,10 +6,10 @@ Flexible REST API testing in Visual Studio Code using **Simple Javascript** 🤘
 
 ## Features
 
-- Create HTTP request files using simple Javascript
+- Create HTTP request files with simple Javascript
 - Send requests directly from VS Code using [axios](https://github.com/axios/axios) under the hood
 - Pretty response panel/tab view
-- Import files for common config info
+- Import common files like json or another js
 - Auto persist cookies
 - Auto save last successful responses (200 status code)
 - Auto import `*.rc.js` (common config files)
@@ -23,9 +23,11 @@ The only requirements are to use specific file extensions.
 1. `*.req.js` - for request files
 2. `*.rc.js` - for common request configuration files
 
+No other requirements or installation!
+
 ## Basic Usage
 
-Dead simple example usage, with just URL.
+Dead simple example, with just URL.
 
 #### 1. Create a request file.
 Write the following code inside `mytodos.req.js`
@@ -61,9 +63,9 @@ module.exports = {
 Most common options you might need are:
 
 * `url` - resource url
-* `method` - GET, POST, PUT, PATCH, more... 
-* `params` - this is the query string like `foo=bar&page=1&offset=6` 
-* `data` - this is the body of POST and other method  
+* `method` - GET, POST, PUT, PATCH, ... 
+* `params` - the query string `foo=bar&page=1&offset=6` but in object format
+* `data` - the body of request  
 * `headers` - request headers
 
 #### The `*.rc.js` files
@@ -99,7 +101,7 @@ with email, password and custom headers
 */
 
 ```
-**Note:** Will also look for config files 3 levels up from request file.
+Note: Multiple rc files will be merged.
 
 -----------------------------------------------------------------------------------------------------------
 
