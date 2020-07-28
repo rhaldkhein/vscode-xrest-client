@@ -30,7 +30,7 @@ export default class Request {
       )
 
       const parts = [
-        'node',
+        `"${process.argv[0]}"`,
         `"${__dirname}/scripts/request"`,
         `"${fileName}"`,
         `"${command}"`
