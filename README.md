@@ -2,7 +2,7 @@
 
 Flexible REST API testing in Visual Studio Code using **Simple Javascript** 🤘🚀  
   
-[GIF HERE]  
+![xrest-client](https://raw.githubusercontent.com/rhaldkhein/vscode-xrest-client/master/static/demo.gif) 
 
 ## Features
 
