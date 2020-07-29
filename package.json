@@ -39,7 +39,8 @@
   },
   "activationEvents": [
     "onCommand:vscode-xrest-client.sendRequest",
-    "onCommand:vscode-xrest-client.showLastResponse"
+    "onCommand:vscode-xrest-client.showLastResponse",
+    "onLanguage:javascript"
   ],
   "contributes": {
     "commands": [

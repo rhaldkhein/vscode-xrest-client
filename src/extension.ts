@@ -1,11 +1,18 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode'
+// import * as vscode from 'vscode'
 import Request from './Request'
+import {
+  commands,
+  languages,
+  ExtensionContext,
+  DocumentSelector
+} from 'vscode'
+import SendRequestProvider from './codelens/SendRequestProvider'
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext): void {
+export function activate(context: ExtensionContext): void {
 
   // Create single requester per context
   const request = new Request(context)
@@ -20,16 +27,29 @@ export function activate(context: vscode.ExtensionContext): void {
   // The commandId parameter must match the command field in package.json
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('vscode-xrest-client.sendRequest', async () => {
+    commands.registerCommand('vscode-xrest-client.sendRequest', async () => {
       // The code you place here will be executed every time your command is executed
       await request.send('new_request')
     })
   )
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('vscode-xrest-client.showLastResponse', async () => {
+    commands.registerCommand('vscode-xrest-client.showLastResponse', async () => {
       await request.send('show_last')
     })
+  )
+
+  const docSelector: DocumentSelector = {
+    language: 'javascript',
+    scheme: 'file',
+    pattern: '**/*.req.js'
+  }
+
+  context.subscriptions.push(
+    languages.registerCodeLensProvider(
+      docSelector,
+      new SendRequestProvider()
+    )
   )
 }
 
