@@ -21,8 +21,8 @@
   "icon": "media/images/logo-head-128.png",
   "categories": [
     "Debuggers",
-    "Testing",
     "Formatters",
+    "Visualization",
     "Other"
   ],
   "keywords": [
