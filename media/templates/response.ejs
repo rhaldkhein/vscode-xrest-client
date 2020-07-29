@@ -1,140 +1,26 @@
-<%- include('parts/header') -%>
+<!DOCTYPE html>
+<html lang="en">
 
-<!-- Top Area -->
-<div class="ph3 pt3 pb2 fixed bg-editor z-1 top-0 left-0 right-0">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'none'; img-src <%= cspSource %> https:; script-src <%= cspSource %>; style-src <%= cspSource %>;">
+  <title>Response</title>
 
-  <div class="topbar">
-    <div class="flex items-center mb1">
-      <div class="pv1 ph2 bg-sidebar br2 mr2"><%= config.method.toUpperCase() %></div>
-      <div class="word-wrap">
-        <%= 
-          config.url.indexOf('://') > -1 ? 
-            config.url :
-            (config.baseURL || '') + config.url 
-        %>
-      </div>
-    </div>
-    <div class="pv1 ph2 bg-sidebar br2 mb3 flex justify-between">
-      <div>
-        <% if (parseInt(status) >= 500) { %>
-        <span class="error"><%= status %> <%= codes[status] || 'Server Error'%></span>
-        <% } else if (parseInt(status) >= 400) { %>
-        <span class="error"><%= status %> <%= codes[status] || 'Client Error'%></span>
-        <% } else if (parseInt(status) >= 300) { %>
-        <span class="warning"><%= status %> <%= codes[status] || 'Redirection'%></span>
-        <% } else if (parseInt(status) >= 200) { %>
-        <span class="success"><%= status %> <%= codes[status] || 'Success'%></span>
-        <% } %>
-        <% if (command === 'show_last') { %>
-        <span> (Saved)</span>
-        <% } %>
-      </div>
-      <% if (command === 'new_request') { %>
-      <div><%= Date.now() - config.metadata.ts %> ms</div>
-      <% } else if (command === 'show_last') { %>
-      <div><%= (new Date(config.metadata.ts)).toDateString() %></div>
-      <% } %>
-    </div>
-  </div>
+  <% styles.forEach(uri => { %>
+  <link rel="stylesheet" href="<%= uri %>">
+  <% }) %>
 
-  <div class="flex justify-between">
-    <div>
-      <div class="mb1">REQUEST</div>
-      <div>
-        <button class="tab-button" data-tab="req-params">Params</button>
-        <button class="tab-button" data-tab="req-body">Body</button>
-        <button class="tab-button" data-tab="req-headers">Headers</button>
-      </div>
-    </div>
-    <div class="tr">
-      <!-- <div class="mb1">RESPONSE (<input type="checkbox" /> Raw)</div> -->
-      <div class="mb1">RESPONSE</div>
-      <div>
-        <button class="toggle toggle-raw">Raw</button>
-        <button class="tab-button" data-tab="res-body">Body</button>
-        <button class="tab-button" data-tab="res-headers">Headers</button>
-      </div>
-    </div>
-  </div>
+</head>
 
-</div>
+<body>
 
-<!-- Main Container / Tab Panels -->
-<div class="main-container ph3 pv2">
+  <!-- Scripts -->
+  <% scripts.forEach(uri => { %>
+  <script nonce="<%= cspNonce %>" src="<%= uri %>"></script>
+  <% }) %>
 
-  <!-- Raw Request Query Params -->
-  <div class="dn tab tab-raw-req-params word-wrap">
-    <%= typeof config.params === 'string' ? 
-        config.params : JSON.stringify(config.params) %>
-  </div>
+</body>
 
-  <!-- Raw Request Body -->
-  <div class="dn tab tab-raw-req-body word-wrap">
-    <%= typeof config.data === 'string' ? 
-        config.data : JSON.stringify(config.data) %>
-  </div>
-
-  <!-- Raw Response Body -->
-  <div class="dn tab tab-raw-res-body word-wrap">
-    <%= typeof data === 'string' ? 
-        data : JSON.stringify(data) %>
-  </div>
-
-  <!-- Request Headers -->
-  <div class="dn tab tab-req-headers">
-    <table cellspacing="0" class="w-100">
-      <tbody>
-        <% Object.keys(config.headers).sort().forEach((key) => { %>
-        <tr>
-          <td class="cell bb ph2 pv1 cyan">
-            <span class="nowrap"><%= key %></span>
-          </td>
-          <td class="cell bb ph2 pv1">
-            <span class="word-wrap"><%= config.headers[key] %></span>
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Response Headers -->
-  <div class="dn tab tab-res-headers">
-    <table cellspacing="0" class="w-100">
-      <tbody>
-        <% Object.keys(headers).sort().forEach((key) => { %>
-        <tr>
-          <td class="cell ph2 pv1 bb cyan">
-            <span class="nowrap"><%= key %></span>
-          </td>
-          <td class="cell ph2 pv1 bb">
-            <span class="word-wrap"><%= headers[key] %></span>
-          </td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Data Body Placeholder -->
-  <div class="dn tab tab-body word-wrap">
-    <div></div>
-  </div>
-
-</div>
-
-<!-- Header Values -->
-<input type="hidden" class="req-formatter" value="<%= reqFormatter %>" />
-<input type="hidden" class="res-formatter" value="<%= resFormatter %>" />
-
-<!-- Logger -->
-<div class="logger ph3 pt3">
-  <div></div>
-</div>
-
-<!-- Scripts -->
-<% scripts.forEach(uri => { %>
-<script nonce="<%= cspNonce %>" src="<%= uri %>"></script>
-<% }) %>
-
-<%- include('parts/footer') -%>
+</html>

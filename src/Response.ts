@@ -17,7 +17,7 @@ class Response {
   public async prepare(command: string, path: string): Promise<void> {
     this._command = command
     RequestView.createOrShow(path)
-    return RequestView.currentView?.displayLoading()
+    // return RequestView.currentView?.displayLoading()
   }
 
   public async success(response: any): Promise<void> {

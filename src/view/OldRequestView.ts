@@ -60,6 +60,8 @@ export default class RequestView {
   private _defaultStyles: vscode.Uri[]
   private _defaultScripts: vscode.Uri[]
 
+  private _formatters: { [name: string]: Formatter }
+
   constructor(
     panel: vscode.WebviewPanel,
     extensionPath: string) {
@@ -70,21 +72,35 @@ export default class RequestView {
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables)
 
     this._defaultStyles = this._buildStyleWebUris([
-      // 'formatters/json.css',
+      'formatters/json.css',
       'styles/tachyons.min.css',
       'styles/style.css'
     ])
     this._defaultScripts = this._buildScriptWebUris([
-      // 'formatters/json.js',
-      'scripts/redom.js',
+      'formatters/json.js',
+      'scripts/cash.js',
       'scripts/main.js'
     ])
 
-    this._panel.webview.onDidReceiveMessage(message => {
-      this._handleCommand(message.command, message.data)
-    })
-
-    this._load()
+    this._formatters = {
+      raw: {
+        formatter: 'raw',
+        styles: this._buildStyleWebUris([]),
+        scripts: this._buildScriptWebUris([])
+      },
+      json: {
+        // Just placeholder, json already added as default
+        formatter: 'json',
+        styles: this._buildStyleWebUris([]),
+        scripts: this._buildScriptWebUris([])
+      },
+      image: {
+        formatter: 'image',
+        styles: this._buildStyleWebUris([]),
+        scripts: this._buildScriptWebUris([])
+      }
+      // #ADD formatters
+    }
 
   }
 
@@ -93,36 +109,36 @@ export default class RequestView {
     response: any):
     Promise<void> {
 
-    // const req = this._getFormatter(this._getContentType(response.config.headers))
-    // const res = this._getFormatter(this._getContentType(response.headers))
+    const req = this._getFormatter(this._getContentType(response.config.headers))
+    const res = this._getFormatter(this._getContentType(response.headers))
 
-    // this._panel.webview.html = await renderFile(
-    //   this._getPath('templates/response.ejs'),
-    //   { ...response, ...this._getTemplateData(req, res), command },
-    //   { cache: true }
-    // )
+    this._panel.webview.html = await renderFile(
+      this._getPath('templates/response.ejs'),
+      { ...response, ...this._getTemplateData(req, res), command },
+      { cache: true }
+    )
 
   }
 
   public async displayLoading():
     Promise<void> {
 
-    // this._panel.webview.html = await renderFile(
-    //   this._getPath('templates/loading.ejs'),
-    //   this._getTemplateData(),
-    //   { cache: true }
-    // )
+    this._panel.webview.html = await renderFile(
+      this._getPath('templates/loading.ejs'),
+      this._getTemplateData(),
+      { cache: true }
+    )
   }
 
   public async displayError(
     err: any):
     Promise<void> {
 
-    // this._panel.webview.html = await renderFile(
-    //   this._getPath('templates/error.ejs'),
-    //   { ...this._getTemplateData(), message: err.message },
-    //   { cache: true }
-    // )
+    this._panel.webview.html = await renderFile(
+      this._getPath('templates/error.ejs'),
+      { ...this._getTemplateData(), message: err.message },
+      { cache: true }
+    )
   }
 
   public dispose():
@@ -136,43 +152,9 @@ export default class RequestView {
     }
   }
 
-
-  /**
-   * Messages
-   */
-
-  private _handleCommand(command: string, data: any): void {
-    switch (command) {
-      case 'init':
-        this._init(data)
-        break
-      default:
-
-        break
-    }
-  }
-
-  private _init(data: any): void {
-    // Display result if already received
-    // or wait for result if not yet received
-    this._send('request')
-  }
-
   /**
    * Private
    */
-
-  private async _load(): Promise<void> {
-    this._panel.webview.html = await renderFile(
-      this._getPath('templates/response.ejs'),
-      this._getTemplateData(),
-      { cache: true }
-    )
-  }
-
-  private _send(command: string, data?: any): void {
-    this._panel.webview.postMessage({ command, data })
-  }
 
   private _buildScriptWebUris(file: string[]): vscode.Uri[] {
     return file.map(f => this._getWebUri(f))
@@ -180,6 +162,24 @@ export default class RequestView {
 
   private _buildStyleWebUris(file: string[]): vscode.Uri[] {
     return file.map(f => this._getWebUri(f))
+  }
+
+  private _getContentType(headers: any): string {
+    for (const key in headers) {
+      if (key.toLowerCase() === 'content-type') {
+        return headers[key]
+      }
+    }
+    return ''
+  }
+
+  private _getFormatter(contentType: string): Formatter {
+    if (isJson.test(contentType)) {
+      return this._formatters['json']
+    } else if (isImage.test(contentType)) {
+      return this._formatters['image']
+    }
+    return this._formatters['raw']
   }
 
   private _getNonce(): string {
@@ -203,13 +203,34 @@ export default class RequestView {
     return path.join(this._extensionPath, 'media', file)
   }
 
-  private _getTemplateData(): any {
+  private _removeDuplicates(arr: any[]): any[] {
+    return [...new Set(arr)]
+  }
+
+  private _getTemplateData(
+    reqFormatter?: Formatter,
+    resFormatter?: Formatter):
+    any {
+
+    // Fix duplicate formatter
+    const defaultFormatter = this._formatters['raw']
+
     return {
       cspNonce: this._getNonce(),
       cspSource: this._panel.webview.cspSource,
       codes,
-      styles: this._defaultStyles,
-      scripts: this._defaultScripts
+      styles: this._removeDuplicates([
+        ...(reqFormatter || defaultFormatter).styles,
+        ...(resFormatter || defaultFormatter).styles,
+        ...this._defaultStyles
+      ]),
+      scripts: this._removeDuplicates([
+        ...(reqFormatter || defaultFormatter).scripts,
+        ...(resFormatter || defaultFormatter).scripts,
+        ...this._defaultScripts
+      ]),
+      reqFormatter: (reqFormatter || defaultFormatter).formatter,
+      resFormatter: (resFormatter || defaultFormatter).formatter
     }
   }
 
