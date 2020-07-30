@@ -70,12 +70,17 @@ export default class RequestView {
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables)
 
     this._defaultStyles = this._buildWebUris([
-      // 'formatters/json.css',
       'styles/tachyons.min.css',
+      'scripts/codemirror/codemirror.min.css',
+      'scripts/codemirror/addon-foldgutter.min.css',
       'styles/style.css'
     ])
     this._defaultScripts = this._buildWebUris([
-      // 'formatters/json.js',
+      'scripts/codemirror/codemirror.min.js',
+      'scripts/codemirror/addon-foldcode.min.js',
+      'scripts/codemirror/addon-foldgutter.min.js',
+      'scripts/codemirror/addon-brace-fold.min.js',
+      'scripts/codemirror/mode-javascript.min.js',
       'scripts/classnames.js',
       'scripts/redom.js',
       'scripts/main.js'

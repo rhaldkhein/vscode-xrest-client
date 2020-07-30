@@ -10,6 +10,10 @@
     send('log', data.map(d => typeof d === 'string' ? d : JSON.stringify(d)))
   }
 
+  function showEditor(yes) {
+    document.getElementById('editor').style.display = yes ? 'block' : 'none'
+  }
+
   /**
    * Components
    */
@@ -91,7 +95,9 @@
   }
 
   class Body {
-
+    constructor() {
+      this.el = el('div.main-container ph3 pv2', 'new Code()')
+    }
   }
 
   class Response {
@@ -119,19 +125,30 @@
             }
           })
         ),
-        el('div.main-container ph3 pv2',
-          'Body'
-        )
+        this.body = new Body()
       )
 
       this.tabs.changeTab(this.data.currTab)
       this.tabs.changeRaw(this.data.showRaw)
-      this.updateBody()
+      // this.updateBody()
 
     }
     updateBody() {
       // Update body based on data
       log(this.data)
+      if (this.data.currTab === 'req-body') {
+        showEditor(true)
+        editor.setOption('mode', modes.none)
+        editor.setValue('{ "b": 2 }')
+      }
+      if (this.data.currTab === 'req-headers') {
+        showEditor(false)
+      }
+      if (this.data.currTab === 'res-body') {
+        showEditor(true)
+        editor.setOption('mode', modes.json)
+        editor.setValue('{ "a": 1 }')
+      }
     }
   }
 
@@ -175,10 +192,21 @@
    * App
    */
 
+  const modes = {
+    none: null,
+    json: { name: 'javascript', json: true }
+  }
+
+  const editor = CodeMirror(document.getElementById('editor'), {
+    mode: modes.none,
+    lineNumbers: true,
+    foldGutter: true,
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
+  })
+
   const app = new App()
-  mount(document.body, app)
+  mount(document.body, app, document.body.firstChild)
   send('init')
-  // log(document.getElementById('root').outerHTML)
 
 })(redom, acquireVsCodeApi(), classNames)
 

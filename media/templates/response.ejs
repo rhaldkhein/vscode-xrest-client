@@ -16,7 +16,8 @@
 
 <body>
 
-  <!-- Scripts -->
+  <div id="editor"></div>
+
   <% scripts.forEach(uri => { %>
   <script nonce="<%= cspNonce %>" src="<%= uri %>"></script>
   <% }) %>
