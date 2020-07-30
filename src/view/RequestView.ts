@@ -59,6 +59,9 @@ export default class RequestView {
 
   private _defaultStyles: vscode.Uri[]
   private _defaultScripts: vscode.Uri[]
+  private _initialized: boolean = false
+  private _command: string | null = null
+  private _response: any = null
 
   constructor(
     panel: vscode.WebviewPanel,
@@ -99,36 +102,26 @@ export default class RequestView {
     response: any):
     Promise<void> {
 
-    // const req = this._getFormatter(this._getContentType(response.config.headers))
-    // const res = this._getFormatter(this._getContentType(response.headers))
-
-    // this._panel.webview.html = await renderFile(
-    //   this._getPath('templates/response.ejs'),
-    //   { ...response, ...this._getTemplateData(req, res), command },
-    //   { cache: true }
-    // )
+    if (this._initialized) {
+      this._send('response', response)
+    } else {
+      this._command = command
+      this._response = response
+    }
 
   }
 
   public async displayLoading():
     Promise<void> {
 
-    // this._panel.webview.html = await renderFile(
-    //   this._getPath('templates/loading.ejs'),
-    //   this._getTemplateData(),
-    //   { cache: true }
-    // )
+    this._send('request')
   }
 
   public async displayError(
     err: any):
     Promise<void> {
 
-    // this._panel.webview.html = await renderFile(
-    //   this._getPath('templates/error.ejs'),
-    //   { ...this._getTemplateData(), message: err.message },
-    //   { cache: true }
-    // )
+    this._send('error', err)
   }
 
   public dispose():
@@ -154,7 +147,7 @@ export default class RequestView {
         console.log(...data)
         break
       case 'init':
-        this._init(data)
+        this._init()
         break
       default:
 
@@ -162,10 +155,15 @@ export default class RequestView {
     }
   }
 
-  private _init(data: any): void {
+  private _init(): void {
     // Display result if already received
     // or wait for result if not yet received
-    this._send('request')
+    this._initialized = true
+    if (this._command) {
+      this._send('response', this._response)
+    }
+    this._command = null
+    this._response = null
   }
 
   /**
@@ -173,6 +171,7 @@ export default class RequestView {
    */
 
   private async _load(): Promise<void> {
+    if (this._initialized) return
     this._panel.webview.html = await renderFile(
       this._getPath('templates/response.ejs'),
       this._getTemplateData(),

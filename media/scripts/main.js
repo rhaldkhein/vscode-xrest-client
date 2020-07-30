@@ -107,8 +107,12 @@
   class HeaderItem {
     constructor() {
       this.el = el('tr',
-        this.header = el('td.cell bb ph2 pv1 cyan', 'Key'),
-        this.value = el('td.cell bb ph2 pv1', 'Item')
+        el('td.cell cell-key bb ph2 pv1 cyan',
+          this.header = el('span', 'Key')
+        ),
+        el('td.cell bb ph2 pv1',
+          this.value = el('span.word-wrap', 'Item')
+        )
       )
     }
     update(data) {
@@ -164,7 +168,7 @@
       ]
 
       this.el = el('div.dn',
-        el('div.ph3 pt3 pb2 fixed bg-editor z-1 top-0 left-0 right-0',
+        el('div.ph3 pt3 pb2 fixed bg-editor z-999 top-0 left-0 right-0',
           this.request = new RequestBar(),
           this.status = new StatusBar(),
           this.tabs = new BodyTabs({
@@ -180,7 +184,7 @@
             }
           })
         ),
-        el('div.main-container', this.bodies)
+        this.container = el('div.main-container', this.bodies)
       )
 
       this.tabs.changeTab(this.data.currTab)
@@ -213,6 +217,8 @@
 
       this.bodies.forEach(b => setAttr(b, { class: 'dn' }))
       if (forEditor) {
+        this.container.style.display = 'none'
+        editor.setValue('')
         if (tab === 'req-params') {
           editor.setOption('mode', modes.json)
           editor.setValue(JSON.stringify(this.response.config.params, null, 2))
@@ -233,13 +239,15 @@
             editor.setValue(JSON.stringify(data))
           }
         }
-      } else if (tab.endsWith('-headers')) {
-        setAttr(this.bodies[0], { class: 'db' })
-        this.bodies[0].setHeaders(tab === 'res-headers' ?
-          this.response.headers :
-          this.response.config.headers
-        )
       } else {
+        this.container.style.display = 'block'
+        if (tab.endsWith('-headers')) {
+          setAttr(this.bodies[0], { class: 'db' })
+          this.bodies[0].setHeaders(tab === 'res-headers' ?
+            this.response.headers :
+            this.response.config.headers
+          )
+        }
         // Image / Video / Other
       }
 
@@ -258,32 +266,13 @@
       )
     }
     showScreen(screen, data) {
+      showEditor(false)
       this.screens.forEach((s, i) => {
         setStyle(s, { display: i === screen ? 'block' : 'none' })
       })
       if (screen === 2) {
         const responseScreen = this.screens[2]
-        // responseScreen.response = data
-        responseScreen.response = {
-          config: {
-            headers: {
-              'content-type': 'application/json'
-              // 'content-type': 'text/plain'
-            },
-            params: {
-              nice: 'game'
-            },
-            data: {
-              name: 'Kevin'
-            }
-          },
-          headers: {
-            // 'content-type': 'image/jpeg'
-            'content-type': 'application/json'
-          },
-          // data: 'Image Data'
-          data: { name: 'Marian' }
-        }
+        responseScreen.response = data
         responseScreen.updateBody()
       }
     }
@@ -302,7 +291,7 @@
         app.showScreen(2, data)
         break;
       default:
-        app.showScreen(0)
+        app.showScreen(0, data)
     }
   })
 
@@ -324,10 +313,12 @@
     {
       mode: modes.none,
       lineNumbers: true,
+      lineWrapping: true,
       foldGutter: true,
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     }
   )
+  // editor.setSize('100%', '100%')
   showEditor(false)
 
 })(redom, acquireVsCodeApi(), classNames)
