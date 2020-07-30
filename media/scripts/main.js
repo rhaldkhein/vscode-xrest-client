@@ -191,23 +191,24 @@
 
       const { currTab: tab, showRaw: raw } = this.data
       let forEditor = false
-      let contType = null
+      let reqContType = null
+      let resContType = null
 
       if (raw || tab === 'req-params') {
         forEditor = true
       } else if (tab === 'req-body') {
-        contType = getContentType(this.response.config.headers)
-        forEditor = isForEditor(contType)
+        reqContType = getContentType(this.response.config.headers)
+        forEditor = isForEditor(reqContType)
       } else if (tab === 'res-body') {
-        contType = getContentType(this.response.headers)
-        forEditor = isForEditor(contType)
+        resContType = getContentType(this.response.headers)
+        forEditor = isForEditor(resContType)
       }
 
       if (forEditor && (tab === 'req-headers' || tab === 'res-headers')) {
         forEditor = false
       }
 
-      log(this.data, contType)
+      log(this.data)
       showEditor(forEditor)
 
       this.bodies.forEach(b => setAttr(b, { class: 'dn' }))
@@ -216,15 +217,20 @@
           editor.setOption('mode', modes.json)
           editor.setValue(JSON.stringify(this.response.config.params, null, 2))
         } else if (tab.endsWith('-body')) {
-          const data = tab === 'res-body' ?
-            this.response.data :
-            this.response.config.data
-          if (reIsJson.test(contType)) {
+          let ctype, data
+          if (tab === 'req-body') {
+            ctype = reqContType
+            data = this.response.config.data
+          } else {
+            ctype = resContType
+            data = this.response.data
+          }
+          if (!raw && reIsJson.test(ctype)) {
             editor.setOption('mode', modes.json)
             editor.setValue(JSON.stringify(data, null, 2))
           } else {
             editor.setOption('mode', modes.none)
-            editor.setValue(data)
+            editor.setValue(JSON.stringify(data))
           }
         }
       } else if (tab.endsWith('-headers')) {
@@ -260,8 +266,8 @@
         responseScreen.response = {
           config: {
             headers: {
-              // 'content-type': 'application/json'
-              'content-type': 'text/plain'
+              'content-type': 'application/json'
+              // 'content-type': 'text/plain'
             },
             params: {
               nice: 'game'
@@ -271,11 +277,11 @@
             }
           },
           headers: {
-            'content-type': 'image/jpeg'
-            // 'content-type': 'application/json'
+            // 'content-type': 'image/jpeg'
+            'content-type': 'application/json'
           },
-          data: 'Image Data'
-          // data: { name: 'Marian' }
+          // data: 'Image Data'
+          data: { name: 'Marian' }
         }
         responseScreen.updateBody()
       }
