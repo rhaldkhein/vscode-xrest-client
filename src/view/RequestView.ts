@@ -69,13 +69,14 @@ export default class RequestView {
     this._panel.iconPath = this._getFileUri('images/logo-head-128.png')
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables)
 
-    this._defaultStyles = this._buildStyleWebUris([
+    this._defaultStyles = this._buildWebUris([
       // 'formatters/json.css',
       'styles/tachyons.min.css',
       'styles/style.css'
     ])
-    this._defaultScripts = this._buildScriptWebUris([
+    this._defaultScripts = this._buildWebUris([
       // 'formatters/json.js',
+      'scripts/classnames.js',
       'scripts/redom.js',
       'scripts/main.js'
     ])
@@ -143,6 +144,10 @@ export default class RequestView {
 
   private _handleCommand(command: string, data: any): void {
     switch (command) {
+      case 'log':
+        // tslint:disable-next-line: no-console
+        console.log(...data)
+        break
       case 'init':
         this._init(data)
         break
@@ -174,11 +179,7 @@ export default class RequestView {
     this._panel.webview.postMessage({ command, data })
   }
 
-  private _buildScriptWebUris(file: string[]): vscode.Uri[] {
-    return file.map(f => this._getWebUri(f))
-  }
-
-  private _buildStyleWebUris(file: string[]): vscode.Uri[] {
+  private _buildWebUris(file: string[]): vscode.Uri[] {
     return file.map(f => this._getWebUri(f))
   }
 
