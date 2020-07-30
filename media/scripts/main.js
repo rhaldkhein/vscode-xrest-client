@@ -1,5 +1,12 @@
+/* eslint-disable curly */
 /* eslint-disable @typescript-eslint/semi */
 (function ({ el, list, setStyle, setAttr, mount }, vscode, cn) {
+
+  const reIsImage = /image\/.+/i
+  const reIsVideo = /video\/.+/i
+  // const reIsJson = /.+\/json.*/i
+  // const reIsXml = /.+\/xml.*/i
+  // const reIsHtml = /.+\/html.*/i
 
   /**
    * Helpers
@@ -12,6 +19,17 @@
 
   function showEditor(yes) {
     document.getElementById('editor').style.display = yes ? 'block' : 'none'
+  }
+
+  function getContentType(headers) {
+    for (const key in headers) {
+      if (key.toLowerCase() === 'content-type') return headers[key]
+    }
+    return ''
+  }
+
+  function isForEditor(contentType) {
+    return !(reIsImage.test(contentType) || reIsVideo.test(contentType))
   }
 
   /**
@@ -86,27 +104,64 @@
     }
   }
 
-  class Header {
-
-  }
-
-  class Headers {
-
-  }
-
-  class Body {
+  class HeaderItem {
     constructor() {
-      this.el = el('div.main-container ph3 pv2', 'new Code()')
+      this.el = el('tr',
+        this.header = el('td.cell bb ph2 pv1 cyan', 'Key'),
+        this.value = el('td.cell bb ph2 pv1', 'Item')
+      )
+    }
+    update(data) {
+      this.header.textContent = data.key
+      this.value.textContent = data.value
+    }
+  }
+
+  class HeadersBody {
+    constructor() {
+      this.el = el('div.dn',
+        el('table.w-100 ph3',
+          this.list = list('tbody', HeaderItem)
+        )
+      )
+    }
+    setHeaders(headers) {
+      const arrHeaders = []
+      for (const key in headers) {
+        if (headers.hasOwnProperty(key)) {
+          const value = headers[key];
+          arrHeaders.push({ key, value })
+        }
+      }
+      this.list.update(arrHeaders)
+    }
+  }
+
+  class ImageBody {
+    constructor() {
+      this.el = el('div.dn', 'Image/Video Body')
+    }
+  }
+
+  class OtherBody {
+    constructor() {
+      this.el = el('div.dn', 'Other Body')
     }
   }
 
   class Response {
     constructor() {
 
+      this.response = {}
       this.data = {
         currTab: 'res-body',
         showRaw: false
       }
+      this.bodies = [
+        new HeadersBody(),
+        new ImageBody(),
+        new OtherBody()
+      ]
 
       this.el = el('div.dn',
         el('div.ph3 pt3 pb2 fixed bg-editor z-1 top-0 left-0 right-0',
@@ -125,30 +180,58 @@
             }
           })
         ),
-        this.body = new Body()
+        el('div.main-container', this.bodies)
       )
 
       this.tabs.changeTab(this.data.currTab)
       this.tabs.changeRaw(this.data.showRaw)
-      // this.updateBody()
 
     }
     updateBody() {
-      // Update body based on data
-      log(this.data)
-      if (this.data.currTab === 'req-body') {
-        showEditor(true)
-        editor.setOption('mode', modes.none)
-        editor.setValue('{ "b": 2 }')
+
+      const { currTab: tab, showRaw: raw } = this.data
+      let forEditor = false
+      let contType = null
+
+      if (raw || tab === 'req-params') {
+        forEditor = true
+      } else if (tab === 'req-body') {
+        contType = getContentType(this.response.config.headers)
+        forEditor = isForEditor(contType)
+      } else if (tab === 'res-body') {
+        contType = getContentType(this.response.headers)
+        forEditor = isForEditor(contType)
       }
-      if (this.data.currTab === 'req-headers') {
-        showEditor(false)
+
+      if (forEditor && (tab === 'req-headers' || tab === 'res-headers')) {
+        forEditor = false
       }
-      if (this.data.currTab === 'res-body') {
-        showEditor(true)
-        editor.setOption('mode', modes.json)
-        editor.setValue('{ "a": 1 }')
+
+      log(this.data, contType)
+      showEditor(forEditor)
+
+      this.bodies.forEach(b => setAttr(b, { class: 'dn' }))
+      if (forEditor) {
+        if (tab === 'req-params') {
+          editor.setOption('mode', modes.json)
+          editor.setValue(JSON.stringify(this.response.config.params, null, 2))
+        } else if (tab === 'req-body') {
+          editor.setOption('mode', modes.json)
+          editor.setValue(JSON.stringify(this.response.config.data, null, 2))
+        } else if (tab === 'res-body') {
+          editor.setOption('mode', modes.json)
+          editor.setValue(JSON.stringify(this.response.data, null, 2))
+        }
+      } else if (tab === 'req-headers') {
+        setAttr(this.bodies[0], { class: 'db' })
+        this.bodies[0].setHeaders(this.response.config.headers)
+      } else if (tab === 'res-headers') {
+        setAttr(this.bodies[0], { class: 'db' })
+        this.bodies[0].setHeaders(this.response.headers)
+      } else {
+        // Image / Video / Other
       }
+
     }
   }
 
@@ -163,10 +246,33 @@
         ]
       )
     }
-    showScreen(screen) {
+    showScreen(screen, data) {
       this.screens.forEach((s, i) => {
         setStyle(s, { display: i === screen ? 'block' : 'none' })
       })
+      if (screen === 2) {
+        const responseScreen = this.screens[2]
+        responseScreen.response = {
+          config: {
+            headers: {
+              'content-type': 'application/json'
+            },
+            params: {
+              nice: 'game'
+            },
+            data: {
+              name: 'Kevin'
+            }
+          },
+          headers: {
+            'content-type': 'image/jpeg'
+            // 'content-type': 'application/json'
+          },
+          data: 'Image Data'
+          // data: { name: 'Marian' }
+        }
+        responseScreen.updateBody()
+      }
     }
   }
 
@@ -181,7 +287,7 @@
         app.showScreen(1)
         break;
       case 'response':
-        app.showScreen(2)
+        app.showScreen(2, data)
         break;
       default:
         app.showScreen(0)
@@ -191,6 +297,10 @@
   /**
    * App
    */
+
+  const app = new App()
+  mount(document.body, app, document.body.firstChild)
+  send('init')
 
   const modes = {
     none: null,
@@ -203,10 +313,6 @@
     foldGutter: true,
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
   })
-
-  const app = new App()
-  mount(document.body, app, document.body.firstChild)
-  send('init')
 
 })(redom, acquireVsCodeApi(), classNames)
 
