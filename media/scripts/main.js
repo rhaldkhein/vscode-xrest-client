@@ -4,7 +4,7 @@
 
   const reIsImage = /image\/.+/i
   const reIsVideo = /video\/.+/i
-  // const reIsJson = /.+\/json.*/i
+  const reIsJson = /.+\/json.*/i
   // const reIsXml = /.+\/xml.*/i
   // const reIsHtml = /.+\/html.*/i
 
@@ -215,19 +215,24 @@
         if (tab === 'req-params') {
           editor.setOption('mode', modes.json)
           editor.setValue(JSON.stringify(this.response.config.params, null, 2))
-        } else if (tab === 'req-body') {
-          editor.setOption('mode', modes.json)
-          editor.setValue(JSON.stringify(this.response.config.data, null, 2))
-        } else if (tab === 'res-body') {
-          editor.setOption('mode', modes.json)
-          editor.setValue(JSON.stringify(this.response.data, null, 2))
+        } else if (tab.endsWith('-body')) {
+          const data = tab === 'res-body' ?
+            this.response.data :
+            this.response.config.data
+          if (reIsJson.test(contType)) {
+            editor.setOption('mode', modes.json)
+            editor.setValue(JSON.stringify(data, null, 2))
+          } else {
+            editor.setOption('mode', modes.none)
+            editor.setValue(data)
+          }
         }
-      } else if (tab === 'req-headers') {
+      } else if (tab.endsWith('-headers')) {
         setAttr(this.bodies[0], { class: 'db' })
-        this.bodies[0].setHeaders(this.response.config.headers)
-      } else if (tab === 'res-headers') {
-        setAttr(this.bodies[0], { class: 'db' })
-        this.bodies[0].setHeaders(this.response.headers)
+        this.bodies[0].setHeaders(tab === 'res-headers' ?
+          this.response.headers :
+          this.response.config.headers
+        )
       } else {
         // Image / Video / Other
       }
@@ -255,7 +260,8 @@
         responseScreen.response = {
           config: {
             headers: {
-              'content-type': 'application/json'
+              // 'content-type': 'application/json'
+              'content-type': 'text/plain'
             },
             params: {
               nice: 'game'
