@@ -263,6 +263,7 @@
       })
       if (screen === 2) {
         const responseScreen = this.screens[2]
+        // responseScreen.response = data
         responseScreen.response = {
           config: {
             headers: {
@@ -293,7 +294,6 @@
    */
 
   window.addEventListener('message', ({ data: { command, data } }) => {
-    command = 'response'
     switch (command) {
       case 'request':
         app.showScreen(1)
@@ -319,12 +319,16 @@
     json: { name: 'javascript', json: true }
   }
 
-  const editor = CodeMirror(document.getElementById('editor'), {
-    mode: modes.none,
-    lineNumbers: true,
-    foldGutter: true,
-    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
-  })
+  const editor = CodeMirror(
+    document.getElementById('editor'),
+    {
+      mode: modes.none,
+      lineNumbers: true,
+      foldGutter: true,
+      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
+    }
+  )
+  showEditor(false)
 
 })(redom, acquireVsCodeApi(), classNames)
 
