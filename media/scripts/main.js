@@ -52,16 +52,18 @@
    */
 
   class Button {
-    constructor({ id, text, toggle, onclick }) {
+    constructor({ id, text, toggle, onclick, cls = '' }) {
       this.id = id
       this.toggle = toggle
+      this.cls = cls
       this.el = el('button', {
-        class: cn({ 'toggle': this.toggle }),
+        class: cls + ' ' + cn({ 'toggle': this.toggle }),
         onclick: () => onclick(id)
       }, text)
     }
     selected(yes) {
-      setClass(this.el, cn({ 'toggle': this.toggle }, { 'selected': yes }))
+      setClass(this.el,
+        this.cls + ' ' + cn({ 'toggle': this.toggle }, { 'selected': yes }))
     }
   }
 
@@ -86,11 +88,21 @@
   class BodyTabs {
     constructor({ onchange, onraw }) {
       this.tabs = [
-        new Button({ id: 'req-params', text: 'Params', onclick: onchange }),
-        new Button({ id: 'req-body', text: 'Body', onclick: onchange }),
-        new Button({ id: 'req-headers', text: 'Headers', onclick: onchange }),
-        new Button({ id: 'res-body', text: 'Body', onclick: onchange }),
-        new Button({ id: 'res-headers', text: 'Headers', onclick: onchange })
+        new Button({
+          id: 'req-params', text: 'Params', onclick: onchange, cls: 'mr1'
+        }),
+        new Button({
+          id: 'req-body', text: 'Body', onclick: onchange, cls: 'mr1'
+        }),
+        new Button({
+          id: 'req-headers', text: 'Headers', onclick: onchange
+        }),
+        new Button({
+          id: 'res-body', text: 'Body', onclick: onchange, cls: 'ml1'
+        }),
+        new Button({
+          id: 'res-headers', text: 'Headers', onclick: onchange, cls: 'ml1'
+        })
       ]
       this.el = el('div.flex justify-between',
         el('div',
@@ -98,8 +110,8 @@
           el('div.mb1', this.tabs[0], this.tabs[1], this.tabs[2])
         ),
         el('div',
-          el('div.mb1', 'RESPONSE'),
-          el('div.mb1',
+          el('div.mb1 tr', 'RESPONSE'),
+          el('div.mb1 tr',
             this.raw = new Button({
               id: 'raw', text: 'Raw', toggle: true, onclick: onraw
             }),
@@ -120,10 +132,10 @@
   class HeaderItem {
     constructor() {
       this.el = el('tr',
-        el('td.cell cell-key bb ph2 pv1 cyan',
+        el('td.cell cell-key ph2 pv1 cyan',
           this.header = el('span', 'Key')
         ),
-        el('td.cell bb ph2 pv1',
+        el('td.cell ph2 pv1',
           this.value = el('span.word-wrap', 'Item')
         )
       )
@@ -137,7 +149,7 @@
   class HeadersBody {
     constructor() {
       this.el = el('div.dn',
-        el('table.w-100 ph3',
+        el('table.w-100 ph3', { cellspacing: 0 },
           this.list = list('tbody', HeaderItem)
         )
       )
@@ -187,6 +199,7 @@
             this.status = new StatusBar(),
             this.tabs = new BodyTabs({
               onchange: (tab) => {
+                if (this.data.currTab === tab) return
                 this.data.currTab = tab
                 this.tabs.changeTab(this.data.currTab)
                 this.updateBody()
@@ -237,6 +250,7 @@
         editor.setValue('')
         if (tab === 'req-params') {
           editor.setOption('mode', modes.json)
+          editor.setOption('lineWrapping', false)
           editor.setValue(JSON.stringify(this.response.config.params, null, 2))
         } else if (tab.endsWith('-body')) {
           let ctype, data
@@ -249,9 +263,11 @@
           }
           if (!raw && reIsJson.test(ctype)) {
             editor.setOption('mode', modes.json)
+            editor.setOption('lineWrapping', false)
             editor.setValue(JSON.stringify(data, null, 2))
           } else {
             editor.setOption('mode', modes.none)
+            editor.setOption('lineWrapping', true)
             editor.setValue(JSON.stringify(data))
           }
         }
@@ -329,7 +345,7 @@
     {
       mode: modes.none,
       lineNumbers: true,
-      lineWrapping: true,
+      // lineWrapping: true,
       foldGutter: true,
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     }

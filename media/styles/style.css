@@ -3,13 +3,15 @@ html, body, .root {
   margin: 0;
   height: 100%;
   width: 100%;
+  font-family: var(--vscode-editor-font-family);
+  font-size: var(--vscode-editor-font-size);
 }
 *:focus {
   outline: 0;
 }
 button {
   border: none;
-  padding: 4px 12px 5px;
+  padding: 4px 12px;
   background-color: var(--vscode-button-secondaryBackground);
   color: var(--vscode-button-secondaryForeground);
   font-size: 13px;
@@ -18,6 +20,7 @@ button {
   cursor: pointer;
   margin-bottom: 4px;
   display: inline-block;
+  font-family: inherit;
 }
 button:hover {
   background-color: var(--vscode-button-secondaryHoverBackground);
@@ -54,7 +57,9 @@ button.toggle.selected {
 
 /* Custom Classes */
 
-.cell {  border-color: var(--vscode-panel-border); }
+.cell {  
+  border-bottom: 1px dotted var(--vscode-panel-border);
+}
 .cell-key { width: 35%; min-width: 140px; }
 
 /* Debug */
@@ -63,3 +68,54 @@ button.toggle.selected {
 .dgg { border: 1px solid green; }
 .dgb { border: 1px solid blue; }
 .dgy { border: 1px solid yellow; }
+
+/* CodeMirror*/
+
+.CodeMirror {
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--vscode-editor-foreground);
+  background: var(--vscode-editor-background);
+}
+.CodeMirror-gutters {
+  background: var(--vscode-editorGutter-background);
+  border-right-color: var(--vscode-editorGutter-background);
+}
+.CodeMirror-foldmarker {
+  text-shadow: none;
+  color: var(--vscode-terminal-ansiBrightRed);
+  font-size: 1.2rem;
+}
+.CodeMirror-cursor {
+  border-left-color: var(--vscode-terminalCursor-foreground);
+}
+
+.CodeMirror-selected ,
+.CodeMirror-focused .CodeMirror-selected {
+  background-color: var(--vscode-editor-selectionBackground);
+}
+.CodeMirror-scrollbar-filler, 
+.CodeMirror-gutter-filler {
+  background-color: var(--vscode-editor-background);
+}
+
+.cm-s-default .cm-def {color: var(--vscode-editor-foreground);}
+.cm-s-default .cm-variable-2, 
+.cm-s-default .cm-variable-3, 
+.cm-s-default .cm-variable {color: var(--vscode-editor-foreground);}
+.cm-s-default .cm-type {color: var(--vscode-editor-foreground);}
+.cm-s-default .cm-meta {color: var(--vscode-editor-foreground);}
+.cm-s-default .cm-qualifier {color: var(--vscode-editor-foreground);}
+.cm-s-default .cm-builtin {color: var(--vscode-editor-foreground);}
+.cm-s-default .cm-bracket {color: var(--vscode-editor-foreground);}
+.cm-s-default .cm-tag {color: var(--vscode-editor-foreground);}
+.cm-s-default .cm-attribute {color: var(--vscode-editor-foreground);}
+.cm-s-default .cm-hr {color: var(--vscode-editor-foreground);}
+.cm-s-default .cm-link {color: var(--vscode-editor-foreground);}
+.cm-s-default .cm-error {color: var(--vscode-editor-foreground);}
+
+.cm-s-default .cm-string-2,
+.cm-s-default .cm-string {color: var(--vscode-debugTokenExpression-string);}
+.cm-s-default .cm-number {color: var(--vscode-debugTokenExpression-number);}
+.cm-s-default .cm-keyword {color: var(--vscode-debugTokenExpression-boolean);}
+.cm-s-default .cm-atom {color: var(--vscode-debugTokenExpression-boolean);}
