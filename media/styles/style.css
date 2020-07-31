@@ -48,11 +48,10 @@ button.toggle.selected {
 .bg-sidebar { background-color: var(--vscode-sideBar-background); }
 .bg-editor { background-color: var(--vscode-editor-background); }
 .sticky { position: sticky; }
+.mh0 { min-height: 0; }
+.overflowy-auto { overflow-y: auto; }
 
 /* Custom Classes */
-
-.root { min-height: 0; }
-.editor-container { overflow-y: auto; }
 
 .cell {  border-color: var(--vscode-panel-border); }
 .cell-key { width: 35%; min-width: 140px; }
