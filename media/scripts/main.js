@@ -47,6 +47,10 @@
     return !(reIsImage.test(contentType) || reIsVideo.test(contentType))
   }
 
+  function getUrl({ url, baseURL }) {
+    return url.indexOf('://') ? url : baseURL + url
+  }
+
   /**
    * Components
    */
@@ -70,17 +74,31 @@
   class RequestBar {
     constructor() {
       this.el = el('div.flex items-center mb1',
-        el('div.pv1 ph2 bg-sidebar br2 mr2', 'GET'),
-        el('div.word-wrap', 'http://www.google.com')
+        this.method = el('div.pv1 ph2 bg-sidebar br2 mr2', ''),
+        this.url = el('div.word-wrap', '')
       )
+    }
+    response(req) {
+      this.method.textContent = req.method.toUpperCase()
+      this.url.textContent = getUrl(req)
     }
   }
 
   class StatusBar {
     constructor() {
       this.el = el('div.pv1 ph2 bg-sidebar br2 mb3 flex justify-between',
-        el('div', '200 OK'),
-        el('div', '200 ms')
+        this.status = el('div', '200 OK'),
+        this.time = el('div', '200 ms')
+      )
+    }
+    response(res) {
+      const s = res.status
+      this.status.textContent = s + ' ' + codes[s]
+      this.time.textContent = res.time + ' ms'
+      setClass(this.status,
+        s >= 400 ? 'error' :
+          (s >= 300 ? 'warning' :
+            'success')
       )
     }
   }
@@ -221,7 +239,13 @@
       this.tabs.changeRaw(this.data.showRaw)
 
     }
+    updateHeadArea() {
+      this.request.response(this.response.config)
+      this.status.response(this.response)
+    }
     updateBody() {
+
+      this.updateHeadArea()
 
       const { currTab: tab, showRaw: raw } = this.data
       let forEditor = false
@@ -291,8 +315,8 @@
     constructor() {
       this.el = el('div.h-100',
         this.screens = [
-          el('div.dn pa3', 'Error'),
-          el('div.dn pa3', 'Requesting'),
+          el('div.dn pa3', 'Something went wrong!'),
+          el('div.dn pa3', 'Waiting for response ...'),
           new Response()
         ]
       )
@@ -320,6 +344,7 @@
         app.showScreen(1)
         break;
       case 'response':
+        data.time = Date.now() - data.config.metadata.ts
         app.showScreen(2, data)
         break;
       default:
@@ -335,6 +360,9 @@
   mount(document.getElementById('app'), app)
   send('init')
 
+  const codes = JSON.parse(
+    document.getElementsByClassName('data-codes')[0].value
+  )
   const modes = {
     none: null,
     json: { name: 'javascript', json: true }
@@ -345,7 +373,6 @@
     {
       mode: modes.none,
       lineNumbers: true,
-      // lineWrapping: true,
       foldGutter: true,
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     }

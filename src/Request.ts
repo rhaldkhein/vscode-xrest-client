@@ -18,10 +18,6 @@ export default class Request {
     this._output = vscode.window.createOutputChannel(config.name)
   }
 
-  // public async send(command: string): Promise<void> {
-  //   await this._responseManager.prepare('xxx', this._context.extensionPath)
-  // }
-
   public async send(command: string): Promise<void> {
 
     // Execute request and display to webview panel

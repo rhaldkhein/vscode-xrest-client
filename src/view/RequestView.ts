@@ -4,16 +4,11 @@ import * as vscode from 'vscode'
 import { renderFile } from 'ejs'
 import codes from './codes'
 
-const isImage = /image\/.+/i
-const isJson = /.+\/json.*/i
-const isXml = /.+\/xml.*/i
-const isHtml = /.+\/html.*/i
-
-interface Formatter {
-  formatter: string
-  scripts: vscode.Uri[]
-  styles: vscode.Uri[]
-}
+// interface Formatter {
+//   formatter: string
+//   scripts: vscode.Uri[]
+//   styles: vscode.Uri[]
+// }
 
 export default class RequestView {
 

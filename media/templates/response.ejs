@@ -23,6 +23,8 @@
     </div>
   </div>
 
+  <input type="hidden" class="data-codes" value="<%= JSON.stringify(codes) %>" />
+
   <% scripts.forEach(uri => { %>
   <script nonce="<%= cspNonce %>" src="<%= uri %>"></script>
   <% }) %>
