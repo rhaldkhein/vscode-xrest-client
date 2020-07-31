@@ -288,7 +288,9 @@
           if (!raw && reIsJson.test(ctype)) {
             editor.setOption('mode', modes.json)
             editor.setOption('lineWrapping', false)
-            editor.setValue(JSON.stringify(data, null, 2))
+            editor.setValue(JSON.stringify(
+              typeof data === 'string' ? JSON.parse(data) : data,
+              null, 2))
           } else {
             editor.setOption('mode', modes.none)
             editor.setOption('lineWrapping', true)
