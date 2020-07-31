@@ -1,10 +1,12 @@
-body { 
+html, body, .root { 
   padding: 0;
   margin: 0;
   height: 100%;
   width: 100%;
 }
-
+*:focus {
+  outline: 0;
+}
 button {
   border: none;
   padding: 4px 12px 5px;
@@ -16,9 +18,6 @@ button {
   cursor: pointer;
   margin-bottom: 4px;
   display: inline-block;
-}
-button:focus {
-  outline: 0;
 }
 button:hover {
   background-color: var(--vscode-button-secondaryHoverBackground);
@@ -48,10 +47,16 @@ button.toggle.selected {
 .magenta { color: var(--vscode-terminal-ansiBrightMagenta); }
 .bg-sidebar { background-color: var(--vscode-sideBar-background); }
 .bg-editor { background-color: var(--vscode-editor-background); }
+.sticky { position: sticky; }
 
 /* Custom Classes */
 
+.root { min-height: 0; }
+.editor-container { overflow-y: auto; }
+
 .cell {  border-color: var(--vscode-panel-border); }
-.cell-key { width: 35%; min-width: 140px }
-.main-container { margin-top: 150px; }
-.editor { height: 100% }
+.cell-key { width: 35%; min-width: 140px; }
+
+/* Debug */
+
+.deb { border: 1px solid red; }

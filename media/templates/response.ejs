@@ -16,7 +16,12 @@
 
 <body>
 
-  <div id="editor" class="h-100"></div>
+  <div class="root flex flex-column">
+    <div id="app"></div>
+    <div class="editor-container flex-grow-1">
+      <div id="editor" class="h-100"></div>
+    </div>
+  </div>
 
   <% scripts.forEach(uri => { %>
   <script nonce="<%= cspNonce %>" src="<%= uri %>"></script>

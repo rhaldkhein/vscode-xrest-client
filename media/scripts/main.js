@@ -16,16 +16,16 @@
   function addClass(el, ...cls) { el.classList.add(...cls) }
   function remClass(el, ...cls) { el.classList.remove(...cls) }
   function repClass(el, c1, c2) { el.classList.replace(c1, c2) }
-  function show(el, d = 'block') { el.style.display = d }
-  function hide(el) { show(el, 'none') }
 
   function send(command, data) { vscode.postMessage({ command, data }) }
   function log(...data) {
     send('log', data.map(d => typeof d === 'string' ? d : JSON.stringify(d)))
   }
 
+  function show(el, d = 'block') { el.style.display = d }
+  function hide(el) { show(el, 'none') }
   function showEditor(yes) {
-    document.getElementById('editor').style.display = yes ? 'block' : 'none'
+    show(document.getElementById('editor'), yes ? 'block' : 'none')
   }
 
   function getContentType(headers) {
@@ -173,7 +173,7 @@
       ]
 
       this.el = el('div.dn',
-        el('div.ph3 pt3 pb2 fixed bg-editor z-999 top-0 left-0 right-0',
+        el('div.sticky ph3 pt3 pb2 bg-editor z-999 top-0 left-0 right-0',
           this.request = new RequestBar(),
           this.status = new StatusBar(),
           this.tabs = new BodyTabs({
@@ -189,7 +189,7 @@
             }
           })
         ),
-        this.container = el('div.main-container', this.bodies)
+        el('div.main-container', this.bodies)
       )
 
       this.tabs.changeTab(this.data.currTab)
@@ -222,7 +222,6 @@
 
       this.bodies.forEach(b => hide(b.el))
       if (forEditor) {
-        hide(this.container)
         editor.setValue('')
         if (tab === 'req-params') {
           editor.setOption('mode', modes.json)
@@ -245,7 +244,6 @@
           }
         }
       } else {
-        show(this.container)
         if (tab.endsWith('-headers')) {
           show(this.bodies[0].el)
           this.bodies[0].setHeaders(tab === 'res-headers' ?
@@ -305,7 +303,7 @@
    */
 
   const app = new App()
-  mount(document.body, app, document.body.firstChild)
+  mount(document.getElementById('app'), app)
   send('init')
 
   const modes = {
@@ -323,7 +321,7 @@
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     }
   )
-  // editor.setSize('100%', '100%')
+  editor.setSize('100%', '100%')
   showEditor(false)
 
 })(redom, acquireVsCodeApi(), classNames)
