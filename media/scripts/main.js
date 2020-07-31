@@ -25,7 +25,15 @@
   function show(el, d = 'block') { el.style.display = d }
   function hide(el) { show(el, 'none') }
   function showEditor(yes) {
+    /**
+     * A hacky way to make CodeMirror work alongside Redom. 
+     * It doesn't seems to work with dynamic instantiation inside components.
+     * And need to define element in ejs for CodeMirror to work. 
+     */
     show(document.getElementById('editor'), yes ? 'block' : 'none')
+    const elApp = document.getElementById('app')
+    if (yes) remClass(elApp, 'h-100')
+    else addClass(elApp, 'h-100')
   }
 
   function getContentType(headers) {
@@ -172,24 +180,28 @@
         new OtherBody()
       ]
 
-      this.el = el('div.dn',
-        el('div.sticky ph3 pt3 pb2 bg-editor z-999 top-0 left-0 right-0',
-          this.request = new RequestBar(),
-          this.status = new StatusBar(),
-          this.tabs = new BodyTabs({
-            onchange: (tab) => {
-              this.data.currTab = tab
-              this.tabs.changeTab(this.data.currTab)
-              this.updateBody()
-            },
-            onraw: () => {
-              this.data.showRaw = !this.data.showRaw
-              this.tabs.changeRaw(this.data.showRaw)
-              this.updateBody()
-            }
-          })
-        ),
-        el('div.main-container', this.bodies)
+      this.el = el('div.dn h-100',
+        el('div.h-100 flex flex-column mh0',
+          el('div.ph3 pt3 pb2 bg-editor',
+            this.request = new RequestBar(),
+            this.status = new StatusBar(),
+            this.tabs = new BodyTabs({
+              onchange: (tab) => {
+                this.data.currTab = tab
+                this.tabs.changeTab(this.data.currTab)
+                this.updateBody()
+              },
+              onraw: () => {
+                this.data.showRaw = !this.data.showRaw
+                this.tabs.changeRaw(this.data.showRaw)
+                this.updateBody()
+              }
+            })
+          ),
+          this.container = el('div.flex-grow-1 overflowy-auto',
+            this.bodies
+          )
+        )
       )
 
       this.tabs.changeTab(this.data.currTab)
@@ -217,11 +229,11 @@
         forEditor = false
       }
 
-      log(this.data)
       showEditor(forEditor)
 
       this.bodies.forEach(b => hide(b.el))
       if (forEditor) {
+        hide(this.container)
         editor.setValue('')
         if (tab === 'req-params') {
           editor.setOption('mode', modes.json)
@@ -244,6 +256,7 @@
           }
         }
       } else {
+        show(this.container)
         if (tab.endsWith('-headers')) {
           show(this.bodies[0].el)
           this.bodies[0].setHeaders(tab === 'res-headers' ?
@@ -260,7 +273,7 @@
 
   class App {
     constructor() {
-      this.el = el('div',
+      this.el = el('div.h-100',
         this.screens = [
           el('div.dn pa3', 'Error'),
           el('div.dn pa3', 'Requesting'),

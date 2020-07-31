@@ -50,6 +50,7 @@ button.toggle.selected {
 .sticky { position: sticky; }
 .mh0 { min-height: 0; }
 .overflowy-auto { overflow-y: auto; }
+.flex-1 { flex: 1; }
 
 /* Custom Classes */
 
@@ -58,4 +59,7 @@ button.toggle.selected {
 
 /* Debug */
 
-.deb { border: 1px solid red; }
+.dgr { border: 1px solid red; }
+.dgg { border: 1px solid green; }
+.dgb { border: 1px solid blue; }
+.dgy { border: 1px solid yellow; }
