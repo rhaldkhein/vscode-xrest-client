@@ -12,6 +12,13 @@
    * Helpers
    */
 
+  function setClass(el, cls) { setAttr(el, { class: cls }) }
+  function addClass(el, ...cls) { el.classList.add(...cls) }
+  function remClass(el, ...cls) { el.classList.remove(...cls) }
+  function repClass(el, c1, c2) { el.classList.replace(c1, c2) }
+  function show(el, d = 'block') { el.style.display = d }
+  function hide(el) { show(el, 'none') }
+
   function send(command, data) { vscode.postMessage({ command, data }) }
   function log(...data) {
     send('log', data.map(d => typeof d === 'string' ? d : JSON.stringify(d)))
@@ -46,9 +53,7 @@
       }, text)
     }
     selected(yes) {
-      setAttr(this.el, {
-        class: cn({ 'toggle': this.toggle }, { 'selected': yes })
-      })
+      setClass(this.el, cn({ 'toggle': this.toggle }, { 'selected': yes }))
     }
   }
 
@@ -215,9 +220,9 @@
       log(this.data)
       showEditor(forEditor)
 
-      this.bodies.forEach(b => setAttr(b, { class: 'dn' }))
+      this.bodies.forEach(b => hide(b.el))
       if (forEditor) {
-        this.container.style.display = 'none'
+        hide(this.container)
         editor.setValue('')
         if (tab === 'req-params') {
           editor.setOption('mode', modes.json)
@@ -240,9 +245,9 @@
           }
         }
       } else {
-        this.container.style.display = 'block'
+        show(this.container)
         if (tab.endsWith('-headers')) {
-          setAttr(this.bodies[0], { class: 'db' })
+          show(this.bodies[0].el)
           this.bodies[0].setHeaders(tab === 'res-headers' ?
             this.response.headers :
             this.response.config.headers
