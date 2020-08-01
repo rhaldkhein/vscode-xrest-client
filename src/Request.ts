@@ -59,7 +59,6 @@ export default class Request {
             if (data.command === 'show_last') {
               this._responseManager.loadLast(data.config)
             } else {
-              console.log(data)
               this._responseManager.success(data)
             }
           } catch (err) {

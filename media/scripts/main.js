@@ -12,6 +12,17 @@
    * Helpers
    */
 
+  function setState(state) {
+    vscode.setState({ ...getState(), ...state })
+  }
+  function getState(key) {
+    const state = vscode.getState() || {}
+    return key ? state[key] : state
+  }
+  function clearState() {
+    vscode.setState({})
+  }
+
   function setClass(el, cls) { setAttr(el, { class: cls }) }
   function addClass(el, ...cls) { el.classList.add(...cls) }
   function remClass(el, ...cls) { el.classList.remove(...cls) }
@@ -90,18 +101,15 @@
   class StatusBar {
     constructor() {
       this.el = el('div.pv1 ph2 bg-sidebar br2 mb3 flex justify-between',
-        this.status = el('div', ''),
-        el('div',
-          this.time = el('span', ''),
-          el('span', ' / '),
-          this.bytes = el('span', '')
-        )
+        el('div', this.status = el('span', ''), ' ', this.saved = el('span', '')),
+        el('div', this.time = el('span', ''), ' / ', this.bytes = el('span', ''))
       )
     }
     response(res) {
       const s = res.status
       const bytes = getHeaderValue(res.headers, 'content-length') || res.bytes || 0
       this.status.textContent = s + ' ' + codes[s]
+      this.saved.textContent = res.command === 'show_last' ? '(Saved)' : ''
       this.time.textContent = res.time + ' ms'
       this.bytes.textContent = bytes >= 1000 ?
         (Math.round((bytes / 1000)) + ' KB') :
@@ -230,7 +238,7 @@
 
       this.response = {}
       this.data = {
-        currTab: 'res-body',
+        currTab: getState('tab') || 'res-body',
         showRaw: false
       }
       this.bodies = [
@@ -248,6 +256,7 @@
             this.tabs = new BodyTabs({
               onchange: (tab) => {
                 if (this.data.currTab === tab) return
+                setState({ tab })
                 this.data.currTab = tab
                 this.tabs.changeTab(this.data.currTab)
                 this.updateBody()
@@ -356,12 +365,23 @@
     }
   }
 
+  class ErrorScreen {
+    constructor() {
+      this.el = el('div.dn pa3',
+        'Something went wrong! ',
+        this.message = el('span', '')
+      )
+    }
+    setError(err) {
+      this.message.textContent = err.message
+    }
+  }
 
   class App {
     constructor() {
       this.el = el('div.h-100',
         this.screens = [
-          el('div.dn pa3', 'Something went wrong!'),
+          new ErrorScreen(),
           el('div.dn pa3', 'Waiting for response ...'),
           new Response()
         ]
@@ -372,7 +392,13 @@
       this.screens.forEach((s, i) => {
         setStyle(s, { display: i === screen ? 'block' : 'none' })
       })
+      if (screen === 0) {
+        // Error screen
+        const errorScreen = this.screens[0]
+        errorScreen.setError(data)
+      }
       if (screen === 2) {
+        // Response screen
         const responseScreen = this.screens[2]
         responseScreen.response = data
         responseScreen.updateBody()
@@ -390,7 +416,6 @@
         app.showScreen(1)
         break;
       case 'response':
-        data.time = Date.now() - data.config.metadata.ts
         app.showScreen(2, data)
         break;
       default:

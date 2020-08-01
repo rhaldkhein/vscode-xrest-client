@@ -15,6 +15,11 @@ function print(
   response: AxiosResponse<any>):
   void {
 
+  if (command === 'show_last') {
+    console.log(JSON.stringify({ ...response, command }))
+    return
+  }
+
   // tslint:disable-next-line: prefer-const
   let { config, status, headers, data } = response
 
@@ -24,6 +29,7 @@ function print(
   const bytes = parseInt(
     getHeaderValue(headers, 'content-length') || '0', 10
   ) || buffer.length
+  const time = Date.now() - (config as any).metadata.ts
   const large = bytes > LARGE_LIMIT
 
   if (large) {
@@ -40,7 +46,7 @@ function print(
   }
 
   console.log(JSON.stringify({
-    command, config, status, headers, data, bytes, large
+    command, config, status, headers, data, time, bytes, large
   }))
 }
 

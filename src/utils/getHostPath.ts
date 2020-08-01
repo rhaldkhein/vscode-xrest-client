@@ -7,7 +7,7 @@ export default function getHostPath(
 
   const url = new URL(
     config.url.indexOf('://') > -1 ?
-      config.url : config.baseURL
+      config.url : (config.baseURL + config.url)
   )
   return cleanUrl(url.host + url.pathname)
 }

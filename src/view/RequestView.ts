@@ -57,6 +57,7 @@ export default class RequestView {
   private _initialized: boolean = false
   private _command: string | null = null
   private _response: any = null
+  private _error: any = null
 
   constructor(
     panel: vscode.WebviewPanel,
@@ -97,11 +98,12 @@ export default class RequestView {
     response: any):
     Promise<void> {
 
+    this._error = null
+    response.command = command
+    this._command = command
+    this._response = response
     if (this._initialized) {
       this._send('response', response)
-    } else {
-      this._command = command
-      this._response = response
     }
 
   }
@@ -109,6 +111,9 @@ export default class RequestView {
   public async displayLoading():
     Promise<void> {
 
+    this._command = null
+    this._response = null
+    this._error = null
     this._send('request')
   }
 
@@ -116,7 +121,10 @@ export default class RequestView {
     err: any):
     Promise<void> {
 
-    this._send('error', err)
+    this._command = null
+    this._response = null
+    this._error = err
+    this._send('error', { message: err.message })
   }
 
   public dispose():
@@ -156,9 +164,11 @@ export default class RequestView {
     this._initialized = true
     if (this._command) {
       this._send('response', this._response)
+    } else if (this._error) {
+      this._send('error', { message: this._error.message })
+    } else {
+      this._send('request')
     }
-    this._command = null
-    this._response = null
   }
 
   /**
