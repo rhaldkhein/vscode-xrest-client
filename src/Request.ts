@@ -21,8 +21,9 @@ export default class Request {
   public async send(command: string): Promise<void> {
 
     // Execute request and display to webview panel
-    const fileName = vscode.window
-      .activeTextEditor?.document.fileName
+    const requestEditor = vscode.window.activeTextEditor
+    const column = requestEditor?.viewColumn || 0
+    const fileName = requestEditor?.document.fileName
     if (fileName && this._regexSupportedFile.test(fileName)) {
 
       // Cancel previous request
@@ -52,6 +53,7 @@ export default class Request {
           maxBuffer: config.bufferLimit * 2
         },
         (err: any, stdout, stderr) => {
+          requestEditor?.show(column)
           if (err || stderr) {
             this._responseManager.error(err || JSON.parse(stderr))
             // tslint:disable-next-line: no-console
