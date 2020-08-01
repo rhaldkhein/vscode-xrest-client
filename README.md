@@ -1,12 +1,12 @@
 # Xrest Client
 
-Flexible REST API testing in Visual Studio Code using **Simple Javascript** 🤘🚀  
+Flexible REST API testing in Visual Studio Code using **Simple Javascript** (just like writing JSON!)  
   
 ![xrest-client](https://raw.githubusercontent.com/rhaldkhein/vscode-xrest-client/master/static/demo.gif) 
 
 ## Features
 
-- Create HTTP request files with simple Javascript
+- Create HTTP request files with simple Javascript object (just like JSON)
 - Send requests directly from VS Code using [axios](https://github.com/axios/axios) under the hood
 - Pretty response panel/tab view
 - Import common files like json or another js
@@ -14,7 +14,8 @@ Flexible REST API testing in Visual Studio Code using **Simple Javascript** 🤘
 - Auto save last successful responses (200 status code)
 - Auto import `*.rc.js` (common config files)
 - Load saved responses
-- And all features from Javascript 
+- Supports images
+- All features from Javascript for very complex request
 
 ## Requirements
 
