@@ -51,7 +51,7 @@
   }
 
   function getUrl({ url, baseURL }) {
-    return url.indexOf('://') ? url : baseURL + url
+    return url.indexOf('://') > -1 ? url : (baseURL + url)
   }
 
   /**
@@ -206,6 +206,19 @@
     }
   }
 
+  class LargeBody {
+    constructor(res) {
+      this.el = el('div.dn ph3',
+        'Too large to display the data. ',
+        this.link = el('a', 'Click here'),
+        ' to view in another application.'
+      )
+    }
+    setResponse(res) {
+      setAttr(this.link, { href: getUrl(res.config) })
+    }
+  }
+
   class OtherBody {
     constructor() {
       this.el = el('div.dn ph3', 'Content type not supported for display')
@@ -223,6 +236,7 @@
       this.bodies = [
         new HeadersBody(),
         new ImageBody(),
+        new LargeBody(),
         new OtherBody()
       ]
 
@@ -262,7 +276,7 @@
     updateBody() {
 
       this.updateHeadArea()
-
+      const res = this.response
       const { currTab: tab, showRaw: raw } = this.data
       let forEditor = false
       let contType = null
@@ -271,12 +285,12 @@
       if (tab === 'req-params') {
         forEditor = true
       } else if (tab === 'req-body') {
-        contType = getContentType(this.response.config.headers)
-        contData = this.response.config.data
+        contType = getContentType(res.config.headers)
+        contData = res.config.data
         forEditor = isForEditor(contType)
       } else if (tab === 'res-body') {
-        contType = getContentType(this.response.headers)
-        contData = this.response.data
+        contType = getContentType(res.headers)
+        contData = res.data
         forEditor = isForEditor(contType)
       }
 
@@ -288,16 +302,26 @@
         forEditor = false
       }
 
-      showEditor(forEditor)
 
+      // Handle too large
+      if (res.large && tab === 'res-body') {
+        this.bodies[2].setResponse(res)
+        showEditor(false)
+        this.bodies.forEach(b => hide(b.el))
+        show(this.bodies[2].el)
+        return
+      }
+
+      showEditor(forEditor)
       this.bodies.forEach(b => hide(b.el))
+
       if (forEditor) {
         hide(this.container)
         editor.setValue('')
         if (tab === 'req-params') {
           editor.setOption('mode', modes.json)
           editor.setOption('lineWrapping', false)
-          editor.setValue(JSON.stringify(this.response.config.params, null, 2))
+          editor.setValue(JSON.stringify(res.config.params, null, 2))
         } else if (tab.endsWith('-body')) {
           if (!raw && reIsJson.test(contType)) {
             editor.setOption('mode', modes.json)
@@ -318,14 +342,14 @@
         if (tab.endsWith('-headers')) {
           show(this.bodies[0].el)
           this.bodies[0].setHeaders(tab === 'res-headers' ?
-            this.response.headers :
-            this.response.config.headers
+            res.headers :
+            res.config.headers
           )
         } else if (reIsImage.test(contType)) {
           show(this.bodies[1].el)
           this.bodies[1].setImage(contType, contData)
         } else {
-          show(this.bodies[2].el)
+          show(this.bodies[3].el)
         }
       }
 
