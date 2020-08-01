@@ -37,10 +37,13 @@
   }
 
   function getContentType(headers) {
-    for (const key in headers) {
-      if (key.toLowerCase() === 'content-type') return headers[key]
+    return getHeaderValue(headers, 'content-type') || ''
+  }
+
+  function getHeaderValue(headers, key) {
+    for (const k in headers) {
+      if (k.toLowerCase() === key) return headers[k]
     }
-    return ''
   }
 
   function isForEditor(contentType) {
@@ -87,14 +90,22 @@
   class StatusBar {
     constructor() {
       this.el = el('div.pv1 ph2 bg-sidebar br2 mb3 flex justify-between',
-        this.status = el('div', '200 OK'),
-        this.time = el('div', '200 ms')
+        this.status = el('div', ''),
+        el('div',
+          this.time = el('span', ''),
+          el('span', ' / '),
+          this.bytes = el('span', '')
+        )
       )
     }
     response(res) {
       const s = res.status
+      const bytes = getHeaderValue(res.headers, 'content-length') || res.bytes || 0
       this.status.textContent = s + ' ' + codes[s]
       this.time.textContent = res.time + ' ms'
+      this.bytes.textContent = bytes >= 1000 ?
+        (Math.round((bytes / 1000)) + ' KB') :
+        (bytes + ' bytes')
       setClass(this.status,
         s >= 400 ? 'error' :
           (s >= 300 ? 'warning' :
@@ -166,8 +177,8 @@
 
   class HeadersBody {
     constructor() {
-      this.el = el('div.dn',
-        el('table.w-100 ph3', { cellspacing: 0 },
+      this.el = el('div.dn ph3',
+        el('table.w-100', { cellspacing: 0 },
           this.list = list('tbody', HeaderItem)
         )
       )
@@ -186,13 +197,18 @@
 
   class ImageBody {
     constructor() {
-      this.el = el('div.dn', 'Image/Video Body')
+      this.el = el('div.dn ph3',
+        this.image = el('img')
+      )
+    }
+    setImage(ctype, data) {
+      setAttr(this.image, { src: 'data:' + ctype + ';base64,' + data })
     }
   }
 
   class OtherBody {
     constructor() {
-      this.el = el('div.dn', 'Other Body')
+      this.el = el('div.dn ph3', 'Content type not supported for display')
     }
   }
 
@@ -249,17 +265,23 @@
 
       const { currTab: tab, showRaw: raw } = this.data
       let forEditor = false
-      let reqContType = null
-      let resContType = null
+      let contType = null
+      let contData = null
 
-      if (raw || tab === 'req-params') {
+      if (tab === 'req-params') {
         forEditor = true
       } else if (tab === 'req-body') {
-        reqContType = getContentType(this.response.config.headers)
-        forEditor = isForEditor(reqContType)
+        contType = getContentType(this.response.config.headers)
+        contData = this.response.config.data
+        forEditor = isForEditor(contType)
       } else if (tab === 'res-body') {
-        resContType = getContentType(this.response.headers)
-        forEditor = isForEditor(resContType)
+        contType = getContentType(this.response.headers)
+        contData = this.response.data
+        forEditor = isForEditor(contType)
+      }
+
+      if (raw) {
+        forEditor = true
       }
 
       if (forEditor && (tab === 'req-headers' || tab === 'res-headers')) {
@@ -277,24 +299,18 @@
           editor.setOption('lineWrapping', false)
           editor.setValue(JSON.stringify(this.response.config.params, null, 2))
         } else if (tab.endsWith('-body')) {
-          let ctype, data
-          if (tab === 'req-body') {
-            ctype = reqContType
-            data = this.response.config.data
-          } else {
-            ctype = resContType
-            data = this.response.data
-          }
-          if (!raw && reIsJson.test(ctype)) {
+          if (!raw && reIsJson.test(contType)) {
             editor.setOption('mode', modes.json)
             editor.setOption('lineWrapping', false)
             editor.setValue(JSON.stringify(
-              typeof data === 'string' ? JSON.parse(data) : data,
+              typeof contData === 'string' ? JSON.parse(contData) : contData,
               null, 2))
           } else {
             editor.setOption('mode', modes.none)
             editor.setOption('lineWrapping', true)
-            editor.setValue(JSON.stringify(data))
+            editor.setValue(
+              typeof contData === 'string' ? contData : JSON.stringify(contData)
+            )
           }
         }
       } else {
@@ -305,8 +321,12 @@
             this.response.headers :
             this.response.config.headers
           )
+        } else if (reIsImage.test(contType)) {
+          show(this.bodies[1].el)
+          this.bodies[1].setImage(contType, contData)
+        } else {
+          show(this.bodies[2].el)
         }
-        // Image / Video / Other
       }
 
     }

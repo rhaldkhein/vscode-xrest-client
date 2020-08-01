@@ -1,17 +1,47 @@
 // tslint:disable no-var-requires no-console no-string-literal
-import axios, { AxiosResponse } from 'axios'
+import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
 import * as path from 'path'
+import match from 'minimatch'
 import { glob } from 'glob'
 import _defaults from 'lodash.defaultsdeep'
 import CookieManager from './Cookie'
+import getContentType from '../utils/getContentType'
+import getHeaderValue from '../utils/getHeaderValue'
+
+const LARGE_LIMIT = 1000 * 1000 * 2 // 2MB
 
 function print(
   command: string,
   response: AxiosResponse<any>):
   void {
 
-  const { config, status, headers, data } = response
-  console.log(JSON.stringify({ command, config, status, headers, data }))
+  // tslint:disable-next-line: prefer-const
+  let { config, status, headers, data } = response
+
+  // Data are now always buffer
+  const buffer = Buffer.from(data, 'binary')
+  const ctype = getContentType(headers)
+  const bytes = parseInt(
+    getHeaderValue(headers, 'content-length') || '0', 10
+  ) || buffer.length
+  const large = bytes > LARGE_LIMIT
+
+  if (large) {
+    data = null
+  } else if (match(ctype, '*(image|audio|video)/*')) {
+    // Binary
+    data = buffer.toString('base64')
+  } else if (match(ctype, '*/json*')) {
+    // JSON
+    data = JSON.parse(buffer.toString())
+  } else {
+    // Plain Text
+    data = buffer.toString()
+  }
+
+  console.log(JSON.stringify({
+    command, config, status, headers, data, bytes, large
+  }))
 }
 
 function printError(
@@ -42,7 +72,7 @@ function getCommon(startDir: string, file: string): any {
 
 function send(
   command: string,
-  config: any,
+  config: AxiosRequestConfig,
   common: any):
   void {
 
@@ -70,6 +100,8 @@ function send(
   const cookie = cookieManager.fetch(config)
   if (cookie) config.headers['Cookie'] = cookie
 
+  config.responseType = 'arraybuffer'
+
   // Add metadata and other stuff before request
   axios.interceptors.request.use(
     (config: any) => {
@@ -82,7 +114,7 @@ function send(
   )
 
   axios(config)
-    .then(response => {
+    .then((response: any) => {
       cookieManager.store(response)
       print(command, response)
     })
