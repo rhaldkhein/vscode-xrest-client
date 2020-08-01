@@ -1,6 +1,6 @@
 # Xrest Client
 
-Flexible REST API testing in Visual Studio Code using **Simple Javascript** (just like writing JSON!)  
+Flexible REST API testing in Visual Studio Code using **Simple Javascript**. Just like writing JSON!  
   
 ![xrest-client](https://raw.githubusercontent.com/rhaldkhein/vscode-xrest-client/master/static/demo.gif) 
 
@@ -58,7 +58,7 @@ module.exports = {
     title: 'Hello',
     body: 'This is a body',
     userId: 1
-  }
+  },
   // Add query string parameters
   params: { 
     foo: 'bar'
