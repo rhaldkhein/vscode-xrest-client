@@ -1,9 +1,14 @@
-# Change Log
+## 0.1.2 - Aug 2, 2020
+### Added
+- Image support
+- Added CodeMirror editor for data display
+- Display a link to external app for unsupported response data
+- Better fallback screen with external link
+### Changed
+- Improved JSON formatting using CodeMirror
+### Fixed
+- Not returning the focus to request script
+- File naming for saving response
 
-All notable changes to the "vscode-xrest-client" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
+## 0.1.0
 - Initial release
