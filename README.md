@@ -7,7 +7,7 @@ Flexible REST API testing in Visual Studio Code using **Simple Javascript** (jus
 ## Features
 
 - Create HTTP request files with simple Javascript object (just like JSON)
-- Send requests directly from VS Code using [axios](https://github.com/axios/axios) under the hood
+- Send requests directly from VS Code
 - Pretty response panel/tab view
 - Import common files like json or another js
 - Auto persist cookies
@@ -42,25 +42,30 @@ A response panel/tab view will auto show and give you complete information about
 
 ## Advanced Usage
 
-Check out axios [request config](https://github.com/axios/axios#request-config) object for more information.
+Following are the options you can use to build the request.  
 
 ```js
 // axios request config object
 module.exports = {
   url: 'https://jsonplaceholder.typicode.com/posts',
   method: 'POST',
+  // Add custom headers
   headers: {
     'X-Custom-Header': 'This is a custom data'
   },
+  // Add body data. Can also be string
   data: {
-    title: 'foo',
-    body: 'bar',
+    title: 'Hello',
+    body: 'This is a body',
     userId: 1
   }
-  // params: { foo: 'bar' }
+  // Add query string parameters
+  params: { 
+    foo: 'bar'
+  }
 }
 ```
-
+  
 Most common options you might need are:
 
 * `url` - resource url
@@ -68,6 +73,8 @@ Most common options you might need are:
 * `params` - the query string `foo=bar&page=1&offset=6` but in object format
 * `data` - the body of request  
 * `headers` - request headers
+
+Also check out axios [request config](https://github.com/axios/axios#request-config) object for more information.  
 
 #### The `*.rc.js` files
 
