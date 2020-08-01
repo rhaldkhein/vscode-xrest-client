@@ -7,8 +7,7 @@ import _defaults from 'lodash.defaultsdeep'
 import CookieManager from './Cookie'
 import getContentType from '../utils/getContentType'
 import getHeaderValue from '../utils/getHeaderValue'
-
-const LARGE_LIMIT = 1000 * 1000 * 2 // 2MB
+import cfg from '../config'
 
 function print(
   command: string,
@@ -30,7 +29,7 @@ function print(
     getHeaderValue(headers, 'content-length') || '0', 10
   ) || buffer.length
   const time = Date.now() - (config as any).metadata.ts
-  const large = bytes > LARGE_LIMIT
+  const large = bytes > cfg.bufferLimit
 
   if (large) {
     data = null

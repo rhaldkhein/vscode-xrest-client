@@ -2,8 +2,9 @@
 /* eslint-disable @typescript-eslint/semi */
 (function ({ el, list, setStyle, setAttr, mount }, vscode, cn) {
 
-  const reIsImage = /image\/.+/i
-  const reIsVideo = /video\/.+/i
+  const reIsImage = /.*image\/.+/i
+  const reIsAudio = /.*audio\/.+/i
+  const reIsVideo = /.*video\/.+/i
   const reIsJson = /.+\/json.*/i
   // const reIsXml = /.+\/xml.*/i
   // const reIsHtml = /.+\/html.*/i
@@ -58,7 +59,9 @@
   }
 
   function isForEditor(contentType) {
-    return !(reIsImage.test(contentType) || reIsVideo.test(contentType))
+    return !(reIsImage.test(contentType) ||
+      reIsVideo.test(contentType) ||
+      reIsAudio.test(contentType))
   }
 
   function getUrl({ url, baseURL }) {
@@ -112,8 +115,8 @@
       this.saved.textContent = res.command === 'show_last' ? '(Saved)' : ''
       this.time.textContent = res.time + ' ms'
       this.bytes.textContent = bytes >= 1000 ?
-        (Math.round((bytes / 1000)) + ' KB') :
-        (bytes + ' bytes')
+        (Math.round((bytes / 1000)) + ' kB') :
+        (bytes + ' B')
       setClass(this.status,
         s >= 400 ? 'error' :
           (s >= 300 ? 'warning' :
@@ -214,24 +217,29 @@
     }
   }
 
-  class LargeBody {
-    constructor(res) {
+  class OtherBody {
+    constructor() {
       this.el = el('div.dn ph3',
-        'Too large to display the data. ',
-        this.link = el('a', 'Click here'),
-        ' to view in another application.'
+        el('div.mb3',
+          this.message = el('span', '')
+        ),
+        el('div',
+          this.link = el('a', 'Click here'), ' to view in another application.'
+        )
       )
     }
-    setResponse(res) {
+    setResponse(res, message) {
+      this.message.textContent = (message || 'Unable to display the data') + '. '
       setAttr(this.link, { href: getUrl(res.config) })
     }
   }
 
-  class OtherBody {
-    constructor() {
-      this.el = el('div.dn ph3', 'Content type not supported for display')
-    }
-  }
+  // class OtherBody {
+  //   constructor() {
+  //     this.el = el('div.dn ph3', 'Content type not supported for display')
+  //      Too large to display the data. 
+  //   }
+  // }
 
   class Response {
     constructor() {
@@ -244,7 +252,6 @@
       this.bodies = [
         new HeadersBody(),
         new ImageBody(),
-        new LargeBody(),
         new OtherBody()
       ]
 
@@ -314,7 +321,7 @@
 
       // Handle too large
       if (res.large && tab === 'res-body') {
-        this.bodies[2].setResponse(res)
+        this.bodies[2].setResponse(res, 'Too larget to display the data')
         showEditor(false)
         this.bodies.forEach(b => hide(b.el))
         show(this.bodies[2].el)
@@ -358,7 +365,9 @@
           show(this.bodies[1].el)
           this.bodies[1].setImage(contType, contData)
         } else {
-          show(this.bodies[3].el)
+          this.bodies[2].setResponse(res,
+            'Content type is not supported to display')
+          show(this.bodies[2].el)
         }
       }
 

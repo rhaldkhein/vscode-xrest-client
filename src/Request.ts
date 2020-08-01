@@ -47,6 +47,10 @@ export default class Request {
       // Execute new request
       this._requestProcess = exec(
         parts.join(' '),
+        {
+          // Added extra margin of 100%
+          maxBuffer: config.bufferLimit * 2
+        },
         (err: any, stdout, stderr) => {
           if (err || stderr) {
             this._responseManager.error(err || JSON.parse(stderr))
