@@ -234,13 +234,6 @@
     }
   }
 
-  // class OtherBody {
-  //   constructor() {
-  //     this.el = el('div.dn ph3', 'Content type not supported for display')
-  //      Too large to display the data. 
-  //   }
-  // }
-
   class Response {
     constructor() {
 
@@ -318,14 +311,9 @@
         forEditor = false
       }
 
-
       // Handle too large
       if (res.large && tab === 'res-body') {
-        this.bodies[2].setResponse(res, 'Too larget to display the data')
-        showEditor(false)
-        this.bodies.forEach(b => hide(b.el))
-        show(this.bodies[2].el)
-        return
+        forEditor = false
       }
 
       showEditor(forEditor)
@@ -361,6 +349,11 @@
             res.headers :
             res.config.headers
           )
+        } else if (res.large && tab === 'res-body') {
+          this.bodies.forEach(b => hide(b.el))
+          this.bodies[2].setResponse(res,
+            'Too larget to display the data')
+          show(this.bodies[2].el)
         } else if (reIsImage.test(contType)) {
           show(this.bodies[1].el)
           this.bodies[1].setImage(contType, contData)
@@ -377,7 +370,7 @@
   class ErrorScreen {
     constructor() {
       this.el = el('div.dn pa3',
-        'Something went wrong! ',
+        el('div.mb3', 'Something went wrong!'),
         this.message = el('span', '')
       )
     }

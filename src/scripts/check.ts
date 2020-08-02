@@ -2,4 +2,8 @@
 
 const file = process.argv[2]
 let request = require(file)
-console.log(JSON.stringify(Object.keys(request)))
+console.log(
+  JSON.stringify(
+    typeof request === 'string' ? [] : Object.keys(request)
+  )
+)

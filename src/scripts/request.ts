@@ -138,7 +138,7 @@ try {
 
   if (
     method === 'none' &&
-    typeof request !== 'function' &&
+    typeof request === 'object' &&
     Object.keys(request).indexOf('url') === -1
   ) {
     // Not a request config
