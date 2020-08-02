@@ -2,7 +2,7 @@
   "name": "vscode-xrest-client",
   "displayName": "Xrest Client",
   "description": "Flexible REST API testing in VS Code using simple Javascript object",
-  "version": "0.0.0",
+  "version": "0.1.2",
   "publisher": "RhaldKhein",
   "author": {
     "name": "RhaldKhein",
