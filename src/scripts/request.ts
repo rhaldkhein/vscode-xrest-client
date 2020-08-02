@@ -84,11 +84,6 @@ function send(
 
   const cookieManager = new CookieManager()
 
-  // Fix string config
-  if (typeof config === 'string') {
-    config = { url: config }
-  }
-
   if (!config.url) {
     throw new Error('Missing "url" property.')
   }
@@ -157,7 +152,12 @@ try {
   // Resolve common config
   const common = getCommon(workspace, file)
   // Resolve request config
-  const config = typeof request === 'function' ? request(common) : request
+  let config = typeof request === 'function' ? request(common) : request
+
+  // Fix string config
+  if (typeof config === 'string') {
+    config = { url: config }
+  }
 
   // Fix request method if not set
   if (!config.method && match(method, methods)) {
