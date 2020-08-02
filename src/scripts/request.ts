@@ -130,10 +130,11 @@ function send(
 
 try {
 
+  const methods = '+(get|post|put|patch|delete|options|head|connect|trace)*'
   const file = process.argv[2]
   const command = process.argv[3]
   const workspace = process.argv[4]
-  const method = process.argv[5]
+  const method = (process.argv[5] || 'none').toLowerCase()
   let request = require(file)
 
   if (
@@ -145,7 +146,7 @@ try {
     throw new Error('Not a request config')
   }
 
-  if (method && method !== 'none') {
+  if (method !== 'none') {
     request = request[method]
     if (!request) {
       throw new Error('Unable to resolve request config. ' +
@@ -158,8 +159,18 @@ try {
   // Resolve request config
   const config = typeof request === 'function' ? request(common) : request
 
-  // Fix request method if method is set
-  // if (method !== 'none') config.method = method.split('_')[0]
+  // Fix request method if not set
+  if (!config.method && match(method, methods)) {
+    if (method.startsWith('get')) config.method = 'get'
+    else if (method.startsWith('post')) config.method = 'post'
+    else if (method.startsWith('put')) config.method = 'put'
+    else if (method.startsWith('patch')) config.method = 'patch'
+    else if (method.startsWith('delete')) config.method = 'delete'
+    else if (method.startsWith('options')) config.method = 'options'
+    else if (method.startsWith('head')) config.method = 'head'
+    else if (method.startsWith('connect')) config.method = 'connect'
+    else if (method.startsWith('trace')) config.method = 'trace'
+  }
 
   // Execute request
   send(command, config, common)
