@@ -52,7 +52,10 @@ export default class SendRequestProvider
     codeLens.command = {
       title: 'Send Request',
       command: 'vscode-xrest-client.sendRequest',
-      arguments: [method]
+      arguments: [{
+        scheme: 'codelens',
+        method: method === 'exports' ? 'none' : method
+      }]
     }
     return codeLens
   }

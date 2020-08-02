@@ -134,7 +134,6 @@ function send(
 
 try {
 
-  const methods = '+(connect|delete|get|head|options|patch|post|put|trace)*'
   const file = process.argv[2]
   const command = process.argv[3]
   const workspace = process.argv[4]
@@ -144,15 +143,18 @@ try {
   // Request request file export for multi request in single file
   if (method === 'none') {
     // Find allowed methods in file
-    const hasMethod = Object.keys(request).filter(k => match(k, methods))
-    if (hasMethod.length) {
-      const err: any = new Error(JSON.stringify(hasMethod))
-      err.code = 'MULTI_REQUEST'
-      throw err
+    if (Object.keys(request).indexOf('url') === -1) {
+      // Not a request config
+      throw new Error('Not a request config')
     }
   } else {
     request = request[method]
+    if (!request) {
+      throw new Error('Unable to resolve request config. ' +
+        'Please do not mix "exports.*" with "module.exports".')
+    }
   }
+
 
   // Resolve common config
   const common = getCommon(workspace, file)
@@ -160,7 +162,11 @@ try {
   const config = typeof request === 'function' ? request(common) : request
 
   // Fix request method if method is set
-  if (method !== 'none') config.method = method.split('_')[0]
+  // if (method !== 'none') config.method = method.split('_')[0]
+
+  if (!config.url) {
+    throw new Error('Missing "url" property.')
+  }
 
   // Execute request
   send(command, config, common)

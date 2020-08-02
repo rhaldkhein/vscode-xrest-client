@@ -9,6 +9,7 @@ export default class Request {
   private _context: vscode.ExtensionContext
   private _regexSupportedFile: RegExp
   private _requestProcess: ChildProcess | undefined
+  private _checkProcess: ChildProcess | undefined
   private _responseManager: Response
   private _output: vscode.OutputChannel
 
@@ -21,7 +22,7 @@ export default class Request {
 
   public async send(
     command: string,
-    method: string = 'none'):
+    arg: any = {}):
     Promise<void> {
 
     // Execute request and display to webview panel
@@ -29,12 +30,24 @@ export default class Request {
     const fileName = requestEditor?.document.fileName
     if (fileName && this._regexSupportedFile.test(fileName)) {
 
+      // Cancel previous process
+      await this._cancel()
+
+      let method = arg.method || 'none'
+
       if (method === 'none') {
-        // Check file first for multi or sigle request
+        // Check file first for multi or single request
+        const methods = await this._check(fileName)
+        if (methods.indexOf('url') === -1) {
+          try {
+            method = await this._pickMethod(methods)
+            // tslint:disable-next-line: no-empty
+          } catch (error) {
+            return
+          }
+        }
       }
 
-      // Cancel previous request
-      await this._cancel()
       await this._responseManager.prepare(
         command,
         this._context.extensionPath
@@ -53,7 +66,42 @@ export default class Request {
         `"${method}"`
       ]
 
-      this._execute(parts, requestEditor)
+      // Execute new request
+      this._requestProcess = exec(
+        parts.join(' '),
+        {
+          // Added extra margin of 100%
+          maxBuffer: config.bufferLimit * 2
+        },
+        async (err: any, stdout, stderr) => {
+          // Return back the focus to request file
+          requestEditor?.show(requestEditor.viewColumn || 0)
+          // Handle error from request file
+          if (stderr) {
+            err = JSON.parse(stderr)
+          }
+          // Handle any local error
+          if (err) {
+            this._responseManager.error(err)
+            this._output.appendLine(err && err.message)
+            return
+          }
+          // Try to display response
+          try {
+            const data = JSON.parse(stdout)
+            if (data.command === 'show_last') {
+              this._responseManager.loadLast(data.config)
+            } else {
+              this._responseManager.success(data)
+            }
+          } catch (err) {
+            this._responseManager.error(err)
+            // tslint:disable-next-line: no-console
+            this._output.appendLine(err.message)
+          }
+          this._requestProcess = undefined
+        }
+      )
 
       return
     }
@@ -61,70 +109,40 @@ export default class Request {
     vscode.window.showErrorMessage('Please select *.req.js file')
   }
 
-  private _execute(
-    parts: string[],
-    editor: vscode.TextEditor | undefined):
-    void {
+  private async _check(
+    fileName: string):
+    Promise<string[]> {
 
-    // Execute new request
-    this._requestProcess = exec(
-      parts.join(' '),
-      {
-        // Added extra margin of 100%
-        maxBuffer: config.bufferLimit * 2
-      },
-      async (err: any, stdout, stderr) => {
-        // Return back the focus to request file
-        editor?.show(editor.viewColumn || 0)
-        // Handle error from request file
-        if (stderr) {
-          err = JSON.parse(stderr)
-          if (err.code === 'MULTI_REQUEST') {
-            // Ask user to select which method and execute again
-            try {
-              const picked = await this._pickMethod(JSON.parse(err.message))
-              parts[parts.length - 1] = picked
-              await this._execute(parts, editor)
-              // tslint:disable-next-line: no-empty
-            } catch (error) { }
-            return
-          }
+    return new Promise((resolve, reject) => {
+      const parts = [
+        `"${process.argv[0]}"`,
+        `"${__dirname}/scripts/check"`,
+        `"${fileName}"`
+      ]
+      this._checkProcess = exec(
+        parts.join(' '),
+        async (err: any, stdout) => {
+          if (stdout) return resolve(JSON.parse(stdout))
+          else reject(err)
         }
-        // Handle any local error
-        if (err) {
-          this._responseManager.error(err)
-          this._output.appendLine(err && err.message)
-          return
-        }
-        // Try to display response
-        try {
-          const data = JSON.parse(stdout)
-          if (data.command === 'show_last') {
-            this._responseManager.loadLast(data.config)
-          } else {
-            this._responseManager.success(data)
-          }
-        } catch (err) {
-          this._responseManager.error(err)
-          // tslint:disable-next-line: no-console
-          this._output.appendLine(err.message)
-        }
-        this._requestProcess = undefined
-      }
-    )
+      )
+    })
   }
 
   private async _pickMethod(methods: string[]):
     Promise<string> {
 
     return new Promise((resolve, reject) => {
+      if (methods.length === 1) {
+        resolve(methods[0])
+        return
+      }
       const quickPick = vscode.window.createQuickPick()
       quickPick.items = methods.map(method => {
         const prts = method.split('_')
         return {
           method,
-          label: (prts.shift() || '').toUpperCase() + ' : ' +
-            (prts.join('_') || 'default')
+          label: method
         }
       })
       quickPick.onDidChangeSelection((selection: any) => {
@@ -143,13 +161,22 @@ export default class Request {
     Promise<void> {
 
     return new Promise(resolve => {
-      if (this._requestProcess) {
+      if (this._requestProcess && this._checkProcess) {
         this._requestProcess.kill()
         this._requestProcess = undefined
-        setTimeout(() => resolve(), 300)
-      } else {
-        resolve()
+        this._checkProcess.kill()
+        this._checkProcess = undefined
+        // setTimeout(() => resolve(), 300)
+      } else if (this._requestProcess && !this._checkProcess) {
+        this._requestProcess.kill()
+        this._requestProcess = undefined
+        // setTimeout(() => resolve(), 300)
+      } else if (!this._requestProcess && this._checkProcess) {
+        this._checkProcess.kill()
+        this._checkProcess = undefined
+        // setTimeout(() => resolve(), 300)
       }
+      resolve()
     })
   }
 
