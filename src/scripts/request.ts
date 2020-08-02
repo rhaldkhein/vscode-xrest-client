@@ -129,7 +129,7 @@ try {
   const file = process.argv[2]
   const command = process.argv[3]
   const workspace = process.argv[4]
-  const method = (process.argv[5] || 'none').toLowerCase()
+  let method = process.argv[5] || 'none'
   let request = require(file)
 
   if (
@@ -160,6 +160,7 @@ try {
   }
 
   // Fix request method if not set
+  method = method.toLowerCase()
   if (!config.method && match(method, methods)) {
     if (method.startsWith('get')) config.method = 'get'
     else if (method.startsWith('post')) config.method = 'post'
