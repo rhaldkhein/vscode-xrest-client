@@ -134,15 +134,33 @@ function send(
 
 try {
 
+  const methods = '+(connect|delete|get|head|options|patch|post|put|trace)*'
   const file = process.argv[2]
   const command = process.argv[3]
   const workspace = process.argv[4]
-  const request = require(file)
+  const method = process.argv[5]
+  let request = require(file)
+
+  // Request request file export for multi request in single file
+  if (method === 'none') {
+    // Find allowed methods in file
+    const hasMethod = Object.keys(request).filter(k => match(k, methods))
+    if (hasMethod.length) {
+      const err: any = new Error(JSON.stringify(hasMethod))
+      err.code = 'MULTI_REQUEST'
+      throw err
+    }
+  } else {
+    request = request[method]
+  }
 
   // Resolve common config
   const common = getCommon(workspace, file)
   // Resolve request config
   const config = typeof request === 'function' ? request(common) : request
+
+  // Fix request method if method is set
+  if (method !== 'none') config.method = method.split('_')[0]
 
   // Execute request
   send(command, config, common)

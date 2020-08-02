@@ -27,9 +27,9 @@ export function activate(context: ExtensionContext): void {
   // The commandId parameter must match the command field in package.json
 
   context.subscriptions.push(
-    commands.registerCommand('vscode-xrest-client.sendRequest', async () => {
+    commands.registerCommand('vscode-xrest-client.sendRequest', async (...args) => {
       // The code you place here will be executed every time your command is executed
-      await request.send('new_request')
+      await request.send('new_request', args[0])
     })
   )
 
