@@ -1,6 +1,6 @@
 # Xrest Client
 
-Flexible REST API testing in Visual Studio Code using **Simple Javascript**. Just like writing JSON!  
+Flexible REST API testing in Visual Studio Code using **Simple Javascript Object**. Just like writing JSON!  
   
 ![xrest-client](https://raw.githubusercontent.com/rhaldkhein/vscode-xrest-client/master/static/demo.gif) 
 
@@ -8,7 +8,8 @@ Flexible REST API testing in Visual Studio Code using **Simple Javascript**. Jus
 
 - Create HTTP request files with simple Javascript object (just like JSON)
 - Send requests directly from VS Code
-- Pretty response panel/tab view
+- Pretty response panel/tab view that match with current theme
+- Build multiple requests in single file
 - Import common files like json or another js
 - Auto persist cookies
 - Auto save last successful responses (200 status code)
@@ -33,10 +34,19 @@ Dead simple example, with just URL.
 #### 1. Create a request file.
 Write the following code inside `mytodos.req.js`
 ```js
-module.exports = 'http://jsonplaceholder.typicode.com/todos'
+// Send Request
+exports.get = 'http://jsonplaceholder.typicode.com/todos'
+
+// Send Request
+exports.post = {
+  url: 'http://jsonplaceholder.typicode.com/todos',
+  data: {
+    title: 'New Todo'
+  }
+}
 ```
-#### 2. Send the request file.
-Right click anyware inside editor and select `Send Request`.
+#### 2. Send the request.
+Click the `Send Request` CodeLen above it. Or simply right click anyware inside editor and select `Send Request`.
 #### 3. View response panel.
 A response panel/tab view will auto show and give you complete information about the request.
 
@@ -46,9 +56,8 @@ Following are the options you can use to build the request.
 
 ```js
 // axios request config object
-module.exports = {
+exports.post = {
   url: 'https://jsonplaceholder.typicode.com/posts',
-  method: 'POST',
   // Add custom headers
   headers: {
     'X-Custom-Header': 'This is a custom data'
@@ -62,17 +71,19 @@ module.exports = {
   // Add query string parameters
   params: { 
     foo: 'bar'
-  }
+  },
+  // Manual override method
+  method: 'PATCH'
 }
 ```
   
 Most common options you might need are:
 
 * `url` - resource url
-* `method` - GET, POST, PUT, PATCH, ... 
 * `params` - the query string `foo=bar&page=1&offset=6` but in object format
 * `data` - the body of request  
 * `headers` - request headers
+* `method` - GET, POST, PUT, PATCH, ... 
 
 Also check out axios [request config](https://github.com/axios/axios#request-config) object for more information.  
 
