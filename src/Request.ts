@@ -2,7 +2,6 @@ import * as vscode from 'vscode'
 import { exec, ChildProcess } from 'child_process'
 import Response from './Response'
 import config from './config'
-import { resolve } from 'path'
 
 export default class Request {
 
@@ -38,10 +37,9 @@ export default class Request {
       if (method === 'none') {
         // Check file first for multi or single request
         const methods = await this._check(fileName)
-        if (methods.indexOf('url') === -1) {
+        if (methods.length && methods.indexOf('url') === -1) {
           try {
             method = await this._pickMethod(methods)
-            // tslint:disable-next-line: no-empty
           } catch (error) {
             return
           }
@@ -122,8 +120,12 @@ export default class Request {
       this._checkProcess = exec(
         parts.join(' '),
         async (err: any, stdout) => {
-          if (stdout) return resolve(JSON.parse(stdout))
-          else reject(err)
+          try {
+            if (stdout) return resolve(JSON.parse(stdout))
+            throw (err || new Error('No check output'))
+          } catch (error) {
+            reject(err)
+          }
         }
       )
     })
@@ -139,7 +141,6 @@ export default class Request {
       }
       const quickPick = vscode.window.createQuickPick()
       quickPick.items = methods.map(method => {
-        const prts = method.split('_')
         return {
           method,
           label: method

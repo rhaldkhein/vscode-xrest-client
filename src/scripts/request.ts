@@ -77,15 +77,20 @@ function getCommon(startDir: string, file: string): any {
 
 function send(
   command: string,
-  config: AxiosRequestConfig,
+  config: any,
   common: any):
   void {
+
 
   const cookieManager = new CookieManager()
 
   // Fix string config
   if (typeof config === 'string') {
     config = { url: config }
+  }
+
+  if (!config.url) {
+    throw new Error('Missing "url" property.')
   }
 
   // Inject base url
@@ -105,18 +110,9 @@ function send(
   const cookie = cookieManager.fetch(config)
   if (cookie) config.headers['Cookie'] = cookie
 
-  config.responseType = 'arraybuffer'
-
   // Add metadata and other stuff before request
-  axios.interceptors.request.use(
-    (config: any) => {
-      config.metadata = { ts: Date.now() }
-      return config
-    },
-    (error) => {
-      return Promise.reject(error)
-    }
-  )
+  config.responseType = 'arraybuffer'
+  config.metadata = { ts: Date.now() }
 
   axios(config)
     .then((response: any) => {
@@ -140,21 +136,22 @@ try {
   const method = process.argv[5]
   let request = require(file)
 
-  // Request request file export for multi request in single file
-  if (method === 'none') {
-    // Find allowed methods in file
-    if (Object.keys(request).indexOf('url') === -1) {
-      // Not a request config
-      throw new Error('Not a request config')
-    }
-  } else {
+  if (
+    method === 'none' &&
+    typeof request !== 'function' &&
+    Object.keys(request).indexOf('url') === -1
+  ) {
+    // Not a request config
+    throw new Error('Not a request config')
+  }
+
+  if (method && method !== 'none') {
     request = request[method]
     if (!request) {
       throw new Error('Unable to resolve request config. ' +
         'Please do not mix "exports.*" with "module.exports".')
     }
   }
-
 
   // Resolve common config
   const common = getCommon(workspace, file)
@@ -163,10 +160,6 @@ try {
 
   // Fix request method if method is set
   // if (method !== 'none') config.method = method.split('_')[0]
-
-  if (!config.url) {
-    throw new Error('Missing "url" property.')
-  }
 
   // Execute request
   send(command, config, common)
