@@ -1,3 +1,8 @@
+## 0.1.4 - Aug 3, 2020
+
+### Fixed
+- Error when method name has uppercase
+
 ## 0.1.3 - Aug 3, 2020
 
 ### Added
