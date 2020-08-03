@@ -1,4 +1,4 @@
-## 0.1.4 - Aug 4, 2020
+## 0.1.5 - Aug 4, 2020
   
 ### Added
 - Search in response body
