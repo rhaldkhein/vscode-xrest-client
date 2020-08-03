@@ -90,35 +90,31 @@ Also check out axios [request config](https://github.com/axios/axios#request-con
 #### The `*.rc.js` files
 
 A "Request Configuration" file holds the common data for all request files `*.req.js`.
-Once you execute a request file, it will look for any configuration file and import all the data.
-
+Once you execute a request file, it will look for any configuration file and import all the data.  
+  
+File: `_common.rc.js`
 ```js
-
-// _common.rc.js
-module.exports = {
-  baseURL: 'https://myserver.com', // Auto prepend to `url`
-  email: 'you@email.com',
-  password: 'ssshhh',
-  headers: {
-    'X-Custom': 'Custom Data' // Auto merge to request
-  }
-}
-
-// mytodos.req.js
-module.exports = (config) => ({
+// Auto prepend to `url` in request file
+exports.baseURL = 'https://myserver.com' 
+exports.email = 'you@email.com'
+exports.password = 'ssshhh'
+exports.headers = { 
+  'X-Custom': 'Custom Data' 
+} // Auto merge to request
+```
+File: `mytodos.req.js`
+```js
+exports.post = (config) => ({
   url: '/signin',
-  method: 'POST',
   data: {
     email: config.email,
     password: config.password
   }
 })
-
 /*
 Will request to https://myserver.com/signin 
 with email, password and custom headers
 */
-
 ```
 Notes: 
 - Multiple rc files will be merged.
