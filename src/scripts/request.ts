@@ -144,8 +144,10 @@ try {
   if (method !== 'none') {
     request = request[method]
     if (!request) {
-      throw new Error('Unable to resolve request config. ' +
-        'Please do not mix "exports.*" with "module.exports".')
+      throw new Error(
+        'Unable to resolve request config. ' +
+        'Please check the request file for any typo. ' +
+        'Also do not mix "exports.*" with "module.exports".')
     }
   }
 
