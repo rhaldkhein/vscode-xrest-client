@@ -80,6 +80,10 @@ export default class Request {
           }
           // Handle any local error
           if (err) {
+            // Cancelled process
+            // #TODO improve, hacky way to check killed process
+            if (err.message.indexOf('Command failed:') > -1) return
+            // Show error
             this._responseManager.error(err)
             this._output.appendLine(err && err.message)
             return
@@ -167,17 +171,18 @@ export default class Request {
         this._requestProcess = undefined
         this._checkProcess.kill()
         this._checkProcess = undefined
-        // setTimeout(() => resolve(), 300)
+        setTimeout(() => resolve(), 100)
       } else if (this._requestProcess && !this._checkProcess) {
         this._requestProcess.kill()
         this._requestProcess = undefined
-        // setTimeout(() => resolve(), 300)
+        setTimeout(() => resolve(), 100)
       } else if (!this._requestProcess && this._checkProcess) {
         this._checkProcess.kill()
         this._checkProcess = undefined
-        // setTimeout(() => resolve(), 300)
+        setTimeout(() => resolve(), 100)
+      } else {
+        resolve()
       }
-      resolve()
     })
   }
 
