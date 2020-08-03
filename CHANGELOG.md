@@ -1,14 +1,23 @@
-## 0.1.4 - Aug 3, 2020
-
+## 0.1.4 - Aug 4, 2020
+  
+### Added
+- Search in response body
+  
 ### Fixed
-- Error when method name has uppercase
-
+- Error when cancelling process for new request  
+- Theme not using UI theme
+  
+## 0.1.4 - Aug 3, 2020
+  
+### Fixed
+- Error when method name has uppercase  
+  
 ## 0.1.3 - Aug 3, 2020
 
 ### Added
 - Multiple requests in single file
 - View saved responses in multi-request file
-
+  
 ## 0.1.2 - Aug 2, 2020
 
 ### Added
