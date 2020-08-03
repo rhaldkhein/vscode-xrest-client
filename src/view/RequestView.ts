@@ -72,6 +72,7 @@ export default class RequestView {
       'styles/tachyons.min.css',
       'scripts/codemirror/codemirror.min.css',
       'scripts/codemirror/addon-foldgutter.min.css',
+      'scripts/codemirror/addon-dialog.min.css',
       'styles/style.css'
     ])
     this._defaultScripts = this._buildWebUris([
@@ -79,6 +80,10 @@ export default class RequestView {
       'scripts/codemirror/addon-foldcode.min.js',
       'scripts/codemirror/addon-foldgutter.min.js',
       'scripts/codemirror/addon-brace-fold.min.js',
+      'scripts/codemirror/addon-matchbrackets.min.js',
+      'scripts/codemirror/addon-dialog.min.js',
+      'scripts/codemirror/addon-searchcursor.min.js',
+      'scripts/codemirror/addon-search.min.js',
       'scripts/codemirror/mode-javascript.min.js',
       'scripts/classnames.js',
       'scripts/redom.js',

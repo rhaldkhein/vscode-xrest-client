@@ -12,19 +12,19 @@ html, body, .root {
 button {
   border: none;
   padding: 4px 12px;
-  background-color: var(--vscode-button-secondaryBackground);
-  color: var(--vscode-button-secondaryForeground);
+  background-color: var(--vscode-sideBar-background);
+  color: var(--vscode-editor-foreground);
   font-size: 13px;
   border-radius: 4px;
-  border: 1px solid var(--vscode-button-secondaryBackground);
+  border: 1px solid var(--vscode-sideBar-background);
   cursor: pointer;
   margin-bottom: 4px;
   display: inline-block;
   font-family: inherit;
 }
 button:hover {
-  background-color: var(--vscode-button-secondaryHoverBackground);
-  border-color: var(--vscode-button-secondaryHoverBackground);
+  background-color: var(--vscode-list-hoverBackground);
+  border-color: var(--vscode-list-hoverBackground);
 }
 button.selected {
   background-color: var(--vscode-button-background);
@@ -32,10 +32,10 @@ button.selected {
 }
 button.toggle {
   background-color: transparent;
-  border: 1px solid var(--vscode-button-secondaryBackground);
+  border: 1px solid var(--vscode-sideBar-background);
 }
 button.toggle:hover {
-  border-color: var(--vscode-button-secondaryHoverBackground);
+  border-color: var(--vscode-list-hoverBackground);
 }
 button.toggle.selected {
   border-color: var(--vscode-button-background);
@@ -46,8 +46,8 @@ button.toggle.selected {
 .error { color: var(--vscode-terminal-ansiBrightRed); }
 .warning { color: var(--vscode-terminal-ansiYellow); }
 .success { color: var(--vscode-terminal-ansiGreen); }
-.cyan { color: var(--vscode-terminal-ansiBrightCyan); }
-.magenta { color: var(--vscode-terminal-ansiBrightMagenta); }
+.cyan { color: var(--vscode-terminal-ansiCyan); }
+.magenta { color: var(--vscode-terminal-ansiMagenta); }
 .bg-sidebar { background-color: var(--vscode-sideBar-background); }
 .bg-editor { background-color: var(--vscode-editor-background); }
 .sticky { position: sticky; }
@@ -83,7 +83,7 @@ button.toggle.selected {
 }
 .CodeMirror-foldmarker {
   text-shadow: none;
-  color: var(--vscode-terminal-ansiBrightRed);
+  color: var(--vscode-terminal-ansiRed);
   font-size: 1.2rem;
 }
 .CodeMirror-cursor {
@@ -97,6 +97,38 @@ button.toggle.selected {
 .CodeMirror-scrollbar-filler, 
 .CodeMirror-gutter-filler {
   background-color: var(--vscode-editor-background);
+}
+
+div.CodeMirror span.CodeMirror-matchingbracket { 
+  color: var(--vscode-terminal-ansiMagenta); 
+}
+div.CodeMirror span.CodeMirror-nonmatchingbracket { 
+  color: var(--vscode-errorForeground); 
+}
+.CodeMirror-dialog-top{
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+.CodeMirror-dialog-bottom{
+  border-top: 1px solid var(--vscode-panel-border);
+}
+.CodeMirror-dialog input {
+  font-family: inherit;
+  font-size: inherit;
+}
+.CodeMirror-dialog-top {
+  display: flex;
+  align-items: center;
+}
+.CodeMirror-dialog input {
+  padding-left: 6px;
+  width: initial;
+  flex:1;
+}
+.cm-searching {
+  background: none;
+}
+.CodeMirror-search-hint {
+  display: none;
 }
 
 .cm-s-default .cm-def {color: var(--vscode-editor-foreground);}
@@ -115,7 +147,8 @@ button.toggle.selected {
 .cm-s-default .cm-error {color: var(--vscode-editor-foreground);}
 
 .cm-s-default .cm-string-2,
-.cm-s-default .cm-string {color: var(--vscode-debugTokenExpression-string);}
-.cm-s-default .cm-number {color: var(--vscode-debugTokenExpression-number);}
-.cm-s-default .cm-keyword {color: var(--vscode-debugTokenExpression-boolean);}
-.cm-s-default .cm-atom {color: var(--vscode-debugTokenExpression-boolean);}
+.cm-s-default .cm-string {color: var(--vscode-editor-foreground);}
+.cm-s-default .cm-number {color: var(--vscode-terminal-ansiGreen);}
+.cm-s-default .cm-keyword {color: var(--vscode-terminal-ansiBlue);}
+.cm-s-default .cm-atom {color: var(--vscode-terminal-ansiBlue);}
+.cm-s-default .cm-property {color: var(--vscode-terminal-ansiCyan);}
