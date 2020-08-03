@@ -324,18 +324,18 @@
         editor.setValue('')
         if (tab === 'req-params') {
           editor.setOption('mode', modes.json)
-          editor.setOption('lineWrapping', false)
+          // editor.setOption('lineWrapping', false)
           editor.setValue(JSON.stringify(res.config.params, null, 2))
         } else if (tab.endsWith('-body')) {
           if (!raw && reIsJson.test(contType)) {
             editor.setOption('mode', modes.json)
-            editor.setOption('lineWrapping', false)
+            // editor.setOption('lineWrapping', false)
             editor.setValue(JSON.stringify(
               typeof contData === 'string' ? JSON.parse(contData) : contData,
               null, 2))
           } else {
             editor.setOption('mode', modes.none)
-            editor.setOption('lineWrapping', true)
+            // editor.setOption('lineWrapping', true)
             editor.setValue(
               typeof contData === 'string' ? contData : JSON.stringify(contData)
             )
@@ -446,7 +446,14 @@
     {
       mode: modes.none,
       lineNumbers: true,
+      lineWrapping: true,
       foldGutter: true,
+      readOnly: true,
+      matchBrackets: true,
+      extraKeys: {
+        'Cmd-F': 'findPersistent',
+        'Ctrl-F': 'findPersistent'
+      },
       gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter']
     }
   )

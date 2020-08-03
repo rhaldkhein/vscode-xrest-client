@@ -99,6 +99,38 @@ button.toggle.selected {
   background-color: var(--vscode-editor-background);
 }
 
+div.CodeMirror span.CodeMirror-matchingbracket { 
+  color: var(--vscode-terminal-ansiBrightGreen); 
+}
+div.CodeMirror span.CodeMirror-nonmatchingbracket { 
+  color: var(--vscode-errorForeground); 
+}
+.CodeMirror-dialog-top{
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+.CodeMirror-dialog-bottom{
+  border-top: 1px solid var(--vscode-panel-border);
+}
+.CodeMirror-dialog input {
+  font-family: inherit;
+  font-size: inherit;
+}
+.CodeMirror-dialog-top {
+  display: flex;
+  align-items: center;
+}
+.CodeMirror-dialog input {
+  padding-left: 6px;
+  width: initial;
+  flex:1;
+}
+.cm-searching {
+  background: none;
+}
+.CodeMirror-search-hint {
+  display: none;
+}
+
 .cm-s-default .cm-def {color: var(--vscode-editor-foreground);}
 .cm-s-default .cm-variable-2, 
 .cm-s-default .cm-variable-3, 
