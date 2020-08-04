@@ -76,7 +76,11 @@ export default class Request {
           requestEditor?.show(requestEditor.viewColumn || 0)
           // Handle error from request file
           if (stderr) {
-            err = JSON.parse(stderr)
+            try {
+              err = JSON.parse(stderr)
+            } catch (error) {
+              err = new Error(stderr.substring(0, 300))
+            }
           }
           // Handle any local error
           if (err) {
@@ -92,7 +96,7 @@ export default class Request {
           try {
             const data = JSON.parse(stdout)
             if (data.command === 'show_last') {
-              this._responseManager.loadLast(data.config)
+              this._responseManager.loadLast(data.request)
             } else {
               this._responseManager.success(data)
             }

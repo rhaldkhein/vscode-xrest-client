@@ -230,7 +230,7 @@
     }
     setResponse(res, message) {
       this.message.textContent = (message || 'Unable to display the data') + '. '
-      setAttr(this.link, { href: getUrl(res.config) })
+      setAttr(this.link, { href: getUrl(res.request) })
     }
   }
 
@@ -279,7 +279,7 @@
 
     }
     updateHeadArea() {
-      this.request.response(this.response.config)
+      this.request.response(this.response.request)
       this.status.response(this.response)
     }
     updateBody() {
@@ -294,8 +294,8 @@
       if (tab === 'req-params') {
         forEditor = true
       } else if (tab === 'req-body') {
-        contType = getContentType(res.config.headers)
-        contData = res.config.data
+        contType = getContentType(res.request.headers)
+        contData = res.request.data
         forEditor = isForEditor(contType)
       } else if (tab === 'res-body') {
         contType = getContentType(res.headers)
@@ -325,7 +325,7 @@
         if (tab === 'req-params') {
           editor.setOption('mode', modes.json)
           // editor.setOption('lineWrapping', false)
-          editor.setValue(JSON.stringify(res.config.params, null, 2))
+          editor.setValue(JSON.stringify(res.request.params, null, 2))
         } else if (tab.endsWith('-body')) {
           if (!raw && reIsJson.test(contType)) {
             editor.setOption('mode', modes.json)
@@ -347,7 +347,7 @@
           show(this.bodies[0].el)
           this.bodies[0].setHeaders(tab === 'res-headers' ?
             res.headers :
-            res.config.headers
+            res.request.headers
           )
         } else if (res.large && tab === 'res-body') {
           this.bodies.forEach(b => hide(b.el))

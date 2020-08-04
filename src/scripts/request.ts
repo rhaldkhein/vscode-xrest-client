@@ -3,11 +3,33 @@ import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
 import * as path from 'path'
 import match from 'minimatch'
 import { glob } from 'glob'
+import fs from 'fs-extra'
+import _get from 'lodash.get'
 import _defaults from 'lodash.defaultsdeep'
+import cfg from '../config'
 import CookieManager from './Cookie'
 import getContentType from '../utils/getContentType'
 import getHeaderValue from '../utils/getHeaderValue'
-import cfg from '../config'
+import getHostPath from '../utils/getHostPath'
+
+function createResolver(config: any): any {
+  return (path: string, from?: string): any => {
+    if (from) {
+      // Get from last saved response
+      const lastResFile = cfg.lastResPath + '/' + getHostPath(from)
+      const exists = fs.pathExistsSync(lastResFile)
+      if (exists) {
+        const response = fs.readFileSync(lastResFile)
+        return _get(JSON.parse(response.toString()), path)
+      } else {
+        return ''
+      }
+    } else {
+      // Get from rc file
+      return _get(config, path)
+    }
+  }
+}
 
 function print(
   command: string,
@@ -45,7 +67,7 @@ function print(
   }
 
   console.log(JSON.stringify({
-    command, config, status, headers, data, time, bytes, large
+    command, request: config, status, headers, data, time, bytes, large
   }))
 }
 
@@ -68,7 +90,7 @@ function getCommon(startDir: string, file: string): any {
   files.forEach(file => {
     const value = require(file)
     common = _defaults(
-      typeof value === 'function' ? value(common) : value,
+      typeof value === 'function' ? value(createResolver(common)) : value,
       common
     )
   })

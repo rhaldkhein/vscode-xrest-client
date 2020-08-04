@@ -10,8 +10,8 @@ class Response {
   private _command: string = ''
 
   constructor() {
-    this._dirLast = config.storagePath + '/responses/last/'
-    this._dirSaved = config.storagePath + '/responses/saved/'
+    this._dirLast = config.lastResPath + '/'
+    this._dirSaved = config.savedResPath + '/'
   }
 
   public async prepare(command: string, path: string): Promise<void> {
@@ -47,7 +47,7 @@ class Response {
   }
 
   private async _save(response: any): Promise<void> {
-    const lastResFile = this._dirLast + getHostPath(response.config)
+    const lastResFile = this._dirLast + getHostPath(response.request)
     return fs.outputFile(lastResFile, JSON.stringify(response))
   }
 

@@ -93,6 +93,7 @@
     "@types/fs-extra": "^9.0.1",
     "@types/glob": "^7.1.1",
     "@types/lodash.defaultsdeep": "^4.6.6",
+    "@types/lodash.get": "^4.4.6",
     "@types/mocha": "^7.0.2",
     "@types/node": "^13.11.0",
     "@types/set-cookie-parser": "0.0.6",
@@ -111,6 +112,7 @@
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
     "lodash.defaultsdeep": "^4.6.1",
+    "lodash.get": "^4.4.2",
     "minimatch": "^3.0.4",
     "set-cookie-parser": "^2.4.6"
   }
