@@ -47,7 +47,7 @@ class Response {
   }
 
   private async _save(response: any): Promise<void> {
-    const lastResFile = this._dirLast + getHostPath(response.config)
+    const lastResFile = this._dirLast + getHostPath(response.request)
     return fs.outputFile(lastResFile, JSON.stringify(response))
   }
 

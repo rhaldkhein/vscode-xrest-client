@@ -12,7 +12,7 @@ import getContentType from '../utils/getContentType'
 import getHeaderValue from '../utils/getHeaderValue'
 import getHostPath from '../utils/getHostPath'
 
-function createAccessor(config: any): any {
+function createResolver(config: any): any {
   return (path: string, from?: string): any => {
     if (from) {
       // Get from last saved response
@@ -67,7 +67,7 @@ function print(
   }
 
   console.log(JSON.stringify({
-    command, config, status, headers, data, time, bytes, large
+    command, request: config, status, headers, data, time, bytes, large
   }))
 }
 
@@ -90,7 +90,7 @@ function getCommon(startDir: string, file: string): any {
   files.forEach(file => {
     const value = require(file)
     common = _defaults(
-      typeof value === 'function' ? value(createAccessor(common)) : value,
+      typeof value === 'function' ? value(createResolver(common)) : value,
       common
     )
   })

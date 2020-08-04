@@ -96,7 +96,7 @@ export default class Request {
           try {
             const data = JSON.parse(stdout)
             if (data.command === 'show_last') {
-              this._responseManager.loadLast(data.config)
+              this._responseManager.loadLast(data.request)
             } else {
               this._responseManager.success(data)
             }
