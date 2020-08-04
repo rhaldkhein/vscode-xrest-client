@@ -10,8 +10,8 @@ class Response {
   private _command: string = ''
 
   constructor() {
-    this._dirLast = config.storagePath + '/responses/last/'
-    this._dirSaved = config.storagePath + '/responses/saved/'
+    this._dirLast = config.lastResPath + '/'
+    this._dirSaved = config.savedResPath + '/'
   }
 
   public async prepare(command: string, path: string): Promise<void> {

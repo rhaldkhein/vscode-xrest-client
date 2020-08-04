@@ -76,7 +76,11 @@ export default class Request {
           requestEditor?.show(requestEditor.viewColumn || 0)
           // Handle error from request file
           if (stderr) {
-            err = JSON.parse(stderr)
+            try {
+              err = JSON.parse(stderr)
+            } catch (error) {
+              err = new Error(stderr.substring(0, 300))
+            }
           }
           // Handle any local error
           if (err) {

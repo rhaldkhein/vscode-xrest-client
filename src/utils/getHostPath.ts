@@ -5,9 +5,14 @@ export default function getHostPath(
   config: any):
   string {
 
-  const url = new URL(
-    config.url.indexOf('://') > -1 ?
+  if (typeof config !== 'string') {
+    config = config.url.indexOf('://') > -1 ?
       config.url : (config.baseURL + config.url)
-  )
+  }
+  if (config.indexOf('://') === -1) {
+    config = 'http://' + config
+  }
+
+  const url = new URL(config)
   return cleanUrl(url.host + url.pathname)
 }
