@@ -1,3 +1,8 @@
+## 0.1.6 - Aug 4, 2020
+  
+### Added
+- Resolver function that gets value from request file or rc file
+  
 ## 0.1.5 - Aug 4, 2020
   
 ### Added

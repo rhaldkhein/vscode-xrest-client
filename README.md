@@ -15,7 +15,8 @@ Flexible REST API testing in Visual Studio Code using **Simple Javascript Object
 - Auto save last successful responses (200 status code)
 - Auto import `*.rc.js` (common config files)
 - Load saved responses
-- Supports images
+- Get data from a response (eg. authentication bearer)
+- Supports images, with viewable headers
 - All features from Javascript for very complex request
 
 ## Requirements
@@ -94,21 +95,22 @@ Once you execute a request file, it will look for any configuration file and imp
   
 File: `_common.rc.js`
 ```js
-// Auto prepend to `url` in request file
-exports.baseURL = 'https://myserver.com' 
 exports.email = 'you@email.com'
 exports.password = 'ssshhh'
+// Auto prepend to `url` in request file
+exports.baseURL = 'https://myserver.com' 
+// Auto merge to request file
 exports.headers = { 
   'X-Custom': 'Custom Data' 
-} // Auto merge to request
+} 
 ```
 File: `mytodos.req.js`
 ```js
-exports.post = (config) => ({
+exports.post = $ => ({
   url: '/signin',
   data: {
-    email: config.email,
-    password: config.password
+    email: $('email'),
+    password: $('password')
   }
 })
 /*
@@ -116,10 +118,54 @@ Will request to https://myserver.com/signin
 with email, password and custom headers
 */
 ```
+
+**The `$` value resolver.** It resolve value from `rc` files as well as from a `response`.
+
+```js
+// Resolve from `rc` file
+$('email')
+// Resolve from response 
+$('data.token', 'myserver.com/api/signin')
+// Response structure
+{
+  status: 200,
+  headers: { ... },
+  data: { 
+    token: 'abc123'
+  }
+}
+```
+
 Notes: 
 - Multiple rc files will be merged.
 - `baseURL` will auto merge to `url` in req file
 - `headers` will also auto merge to `headers` in req file
+
+#### Advanced usage of `rc` files
+
+`rc` files can do many things but one common use case is authentication bearer.
+
+```js
+// _auth.rc.js
+module.exports = $ => {
+  var token = $('data.token', 'myserver.com/api/signin')
+  return {
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  }
+}
+// get-bearer.req.js
+exports.post = {
+  url: 'myserver.com/api/signin',
+  data: { email, password }
+}
+// with-bearer.req.js
+exports.get = {
+  url: '/protected/content'
+}
+```
+Notice that `/protected/content` will have `Authorization` injected automatically.
 
 -----------------------------------------------------------------------------------------------------------
 
