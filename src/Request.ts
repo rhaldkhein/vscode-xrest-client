@@ -105,6 +105,7 @@ export default class Request {
             // tslint:disable-next-line: no-console
             this._output.appendLine(err.message)
           }
+          this._checkProcess = undefined
           this._requestProcess = undefined
         }
       )
