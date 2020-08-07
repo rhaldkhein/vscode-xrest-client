@@ -1,3 +1,13 @@
+## 0.1.7 - Aug 8, 2020
+  
+### Added
+- Send/Refresh button at the end of URL
+  
+### Fixed
+- Stuck loading when trying to open saved response
+- Fix "$ is not a function"
+- Fix process flag
+  
 ## 0.1.6 - Aug 4, 2020
   
 ### Added
