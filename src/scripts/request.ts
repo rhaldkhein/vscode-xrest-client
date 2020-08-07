@@ -115,7 +115,7 @@ function send(
 
   // Cancel now, we only need url
   if (command === 'show_last') {
-    print(command, { config } as any)
+    print(command, { request: config } as any)
     return
   }
 
@@ -176,7 +176,9 @@ try {
   // Resolve common config
   const common = getCommon(workspace, file)
   // Resolve request config
-  let config = typeof request === 'function' ? request(common) : request
+  let config = typeof request === 'function' ?
+    request(createResolver(common)) :
+    request
 
   // Fix string config
   if (typeof config === 'string') {

@@ -2,21 +2,29 @@ import RequestView from './view/RequestView'
 import config from './config'
 import fs from 'fs-extra'
 import getHostPath from './utils/getHostPath'
+import Request from './Request'
 
 class Response {
 
   private _dirLast: string
   private _dirSaved: string
   private _command: string = ''
+  private _commandListener: (cmd: string, data?: any) => void
 
-  constructor() {
+  constructor(commandListener: (cmd: string, data?: any) => void) {
+    this._commandListener = commandListener
     this._dirLast = config.lastResPath + '/'
     this._dirSaved = config.savedResPath + '/'
   }
 
-  public async prepare(command: string, path: string): Promise<void> {
+  public async prepare(
+    command: string,
+    path: string,
+    dontShow?: boolean): Promise<void> {
     this._command = command
-    RequestView.createOrShow(path)
+    if (!dontShow) {
+      RequestView.createOrShow(path, this._commandListener)
+    }
     return RequestView.currentView?.displayLoading()
   }
 
