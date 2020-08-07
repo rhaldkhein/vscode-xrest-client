@@ -4,12 +4,6 @@ import * as vscode from 'vscode'
 import { renderFile } from 'ejs'
 import codes from './codes'
 
-// interface Formatter {
-//   formatter: string
-//   scripts: vscode.Uri[]
-//   styles: vscode.Uri[]
-// }
-
 export default class RequestView {
 
   /**
@@ -19,7 +13,8 @@ export default class RequestView {
   public static currentView: RequestView | undefined
 
   public static createOrShow(
-    extensionPath: string):
+    extensionPath: string,
+    commandListener: (cmd: string, data?: any) => void):
     void {
 
     const column = vscode.window.activeTextEditor?.viewColumn || 0
@@ -41,7 +36,7 @@ export default class RequestView {
         localResourceRoots: [vscode.Uri.file(path.join(extensionPath, 'media'))]
       }
     )
-    RequestView.currentView = new RequestView(panel, extensionPath)
+    RequestView.currentView = new RequestView(panel, extensionPath, commandListener)
   }
 
   /**
@@ -50,6 +45,7 @@ export default class RequestView {
 
   private readonly _panel: vscode.WebviewPanel
   private readonly _extensionPath: string
+  private _commandListener: (cmd: string, data?: any) => void
   private _disposables: vscode.Disposable[] = []
 
   private _defaultStyles: vscode.Uri[]
@@ -61,9 +57,11 @@ export default class RequestView {
 
   constructor(
     panel: vscode.WebviewPanel,
-    extensionPath: string) {
+    extensionPath: string,
+    commandListener: (cmd: string, data?: any) => void) {
 
     this._extensionPath = extensionPath
+    this._commandListener = commandListener
     this._panel = panel
     this._panel.iconPath = this._getFileUri('images/logo-head-128.png')
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables)
@@ -157,10 +155,13 @@ export default class RequestView {
       case 'init':
         this._init()
         break
+      case 'refresh':
+        // Need to bubble up to request
+        break
       default:
-
         break
     }
+    this._commandListener(command, data)
   }
 
   private _init(): void {

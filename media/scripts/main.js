@@ -92,7 +92,10 @@
     constructor() {
       this.el = el('div.flex items-center mb1',
         this.method = el('div.pv1 ph2 bg-sidebar br2 mr2', ''),
-        this.url = el('div.word-wrap', '')
+        this.url = el('div.word-wrap flex-grow-1', ''),
+        el('div.pv1 ph2 bg-sidebar cyan pointer br2 ml2',
+          { onclick: () => send('refresh') },
+          'RF')
       )
     }
     response(req) {
