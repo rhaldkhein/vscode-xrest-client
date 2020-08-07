@@ -95,7 +95,7 @@
         this.url = el('div.word-wrap flex-grow-1', ''),
         el('div.pv1 ph2 bg-sidebar cyan pointer br2 ml2',
           { onclick: () => send('refresh') },
-          'RF')
+          '➤')
       )
     }
     response(req) {

@@ -115,7 +115,7 @@ function send(
 
   // Cancel now, we only need url
   if (command === 'show_last') {
-    print(command, { config } as any)
+    print(command, { request: config } as any)
     return
   }
 

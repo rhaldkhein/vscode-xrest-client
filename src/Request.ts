@@ -14,6 +14,7 @@ export default class Request {
   private _command: string | undefined
   private _arg: any
   private _fileName: string | undefined
+  private _method: string | undefined
 
   constructor(context: vscode.ExtensionContext) {
     this._context = context
@@ -41,6 +42,7 @@ export default class Request {
     arg: any = {}):
     Promise<void> {
 
+    this._method = undefined
     this._command = command
     this._arg = arg
     // Execute request and display to webview panel
@@ -67,7 +69,7 @@ export default class Request {
     // Cancel previous process
     await this._cancel()
 
-    let method = this._arg.method || 'none'
+    let method = this._method || this._arg.method || 'none'
 
     if (method === 'none') {
       // Check file first for multi or single request
@@ -75,6 +77,7 @@ export default class Request {
       if (methods.length && methods.indexOf('url') === -1) {
         try {
           method = await this._pickMethod(methods)
+          this._method = method
         } catch (error) {
           return
         }
@@ -131,7 +134,6 @@ export default class Request {
         // Try to display response
         try {
           const data = JSON.parse(stdout)
-          console.log(data)
           if (data.command === 'show_last') {
             this._responseManager.loadLast(data.request)
           } else {
