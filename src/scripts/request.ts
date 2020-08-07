@@ -176,7 +176,9 @@ try {
   // Resolve common config
   const common = getCommon(workspace, file)
   // Resolve request config
-  let config = typeof request === 'function' ? request(common) : request
+  let config = typeof request === 'function' ?
+    request(createResolver(common)) :
+    request
 
   // Fix string config
   if (typeof config === 'string') {
